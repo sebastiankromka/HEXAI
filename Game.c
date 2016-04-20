@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "ConstValues.h"
+#include "Configuration.h"
 #include "Output.h"
 #include "CheckState.h"
 #include "MinMax.h"
@@ -19,13 +20,8 @@ void move_player_1(int board[board_size][board_size]) {
 int main() {
 	printf("start game");
 
-	int currentPlayer = player_2;
+	int currentPlayer = firstPlayer;
 	int state = 0;
-	// board initialization
-	int board[board_size][board_size] = { { 1, 1, 2, 1 },
-										  { 1, 1, 2, 0 },
-										  { 1, 1, 0, 0 },
-										  { 1, 0, 0, 2 } };
 
 	// game loop
 	state = checkState(board);
