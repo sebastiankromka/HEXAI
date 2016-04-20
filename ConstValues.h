@@ -6,5 +6,8 @@
 #define player_2 2
 #define free 0
 #define checked 3
+#define maxDepth 6
+#define lossOfPointsForDepth 1
+#define winScore 50
 
 #endif
