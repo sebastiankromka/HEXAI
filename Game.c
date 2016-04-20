@@ -24,8 +24,8 @@ int main() {
 	int state = 0;
 
 	// game loop
+	drawBoard(board, 0);
 	state = checkState(board);
-	drawBoard(board,0);
 	while (state == 0) {
 		if (currentPlayer == player_1) {
 			move_player_1(board);
