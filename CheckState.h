@@ -83,4 +83,13 @@ int checkState(int board[board_size][board_size]) {
 	return 0;
 }
 
+int getPoints(board, winner, depth) {
+	int score = 0;
+	if (winner != 0) {
+		return winScore - depth * lossOfPointsForDepth;
+	}
+	// bridge points etc
+	return score;
+}
+
 #endif
