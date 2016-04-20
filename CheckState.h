@@ -20,27 +20,27 @@ int checkLineFromPoint(int x, int y, int board[board_size][board_size], int play
 		state = checkLineFromPoint(x, y - 1, board, player);
 	}
 	//b
-	if (y != 0 && x != board_size - 1 && board[x + 1][y - 1] == player) {
+	if (state == 0 && y != 0 && x != board_size - 1 && board[x + 1][y - 1] == player) {
 		state = checkLineFromPoint(x + 1, y - 1, board, player);
 	}
 	//c
-	if (x != board_size - 1 && board[x + 1][y] == player) {
+	if (state == 0 && x != board_size - 1 && board[x + 1][y] == player) {
 		state = checkLineFromPoint(x + 1, y, board, player);
 	}
 	//d
-	if (x != 0 && board[x - 1][y] == player) {
+	if (state == 0 && x != 0 && board[x - 1][y] == player) {
 		state = checkLineFromPoint(x - 1, y, board, player);
 	}
 	//e
-	if (y != board_size - 1 && x != 0 && board[x - 1][y + 1] == player) {
+	if (state == 0 && y != board_size - 1 && x != 0 && board[x - 1][y + 1] == player) {
 		state = checkLineFromPoint(x - 1, y + 1, board, player);
 	}
 	//f
-	if (y != board_size - 1 && board[x][y + 1] == player) {
+	if (state == 0 && y != board_size - 1 && board[x][y + 1] == player) {
 		state = checkLineFromPoint(x, y + 1, board, player);
 	}
 	board[x][y] = player;
-	return state; // no winner
+	return state;
 }
 
 // check borders. if player have pawn on 1 site then check 2 site.
@@ -49,10 +49,10 @@ int checkLineFromPoint(int x, int y, int board[board_size][board_size], int play
 int checkState(int board[board_size][board_size]) {
 	int state = 0;
 	for (int y = 0; y < board_size; y++) {
-		// if have 1 site
+		// if have down site
 		if (board[board_size - 1][y] == player_2) {
 			for (int y = 0; y < board_size; y++) {
-				// if have 2 site
+				// if have up site
 				if (board[0][y] == player_2) {
 					// check connection 1 to 2 site
 					state = checkLineFromPoint(0, y, board, player_2);
@@ -61,14 +61,14 @@ int checkState(int board[board_size][board_size]) {
 					}
 				}
 			}
-			break;
+			//break;
 		}
 	}
 	for (int x = 0; x < board_size; x++) {
-		// if have 1 site
+		// if have right site
 		if (board[x][board_size - 1] == player_1) {
 			for (int x = 0; x < board_size; x++) {
-				// if have 2 site
+				// if have left site
 				if (board[x][0] == player_1) {
 					// check connection 1 to 2 site
 					state = checkLineFromPoint(x, 0, board, player_1);
@@ -77,7 +77,7 @@ int checkState(int board[board_size][board_size]) {
 					}
 				}
 			}
-			break;
+			//break;
 		}
 	}
 	return 0;
