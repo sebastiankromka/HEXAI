@@ -1,20 +1,32 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
 
-#define board_size 4
-int board[board_size][board_size] = { { 2, 2, 1, 2 },
-									  { 1, 1, 1, 2 },
-									  { 2, 2, 1, 1 },
-									  { 2, 0, 0, 1 } };
+#define board_size 8
 
-#define infoLevel  3
+/*int board[board_size][board_size] = { { 0, 1, 0, 0 },
+									  { 0, 0, 0, 0 },
+									  { 0, 0, 0, 2 },
+									  { 0, 2, 0, 1 } };*/
+
+
+int board[board_size][board_size] = { { 1, 1, 1, 1, 1, 1, 1, 2 },
+{ 1, 2, 1, 2, 1, 2, 1, 2 },
+{ 1, 2, 1, 3, 1, 2, 1, 0 },
+{ 0, 2, 0, 0, 0, 0, 0, 0 },
+{ 0, 0, 0, 0, 0, 0, 1, 0 },
+{ 0, 2, 0, 0, 1, 0, 0, 0 },
+{ 0, 0, 1, 0, 0, 0, 0, 0 },
+{ 1, 2, 0, 0, 0, 0, 0, 0 } };
+#define infoLevel 2
 
 #define firstPlayer player_2
 
-#define maxDepth 6
+#define maxDepth 4
 
-#define lossOfPointsForDepth 1
-#define winScore 50
+#define lossPercentsOfPointsForDepth 10
+#define winScore 100
+#define bridgeAScore 8
+#define bridgeBScore 6
 
 
 #endif

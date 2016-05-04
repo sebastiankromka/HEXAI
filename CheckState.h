@@ -84,13 +84,41 @@ int checkState(int board[board_size][board_size]) {
 }
 int getPointsFromBridges(int board[board_size][board_size], int x, int y, int depth) {
 	int score = 0;
-	// bridge A
+	
 	if (board[x][y] == player_2) {
+		// bridge A1
 		if (x > 1 && y < board_size - 1 && board[x - 2][y + 1] == player_2 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
-			score = bridgeAScore - depth * lossOfPointsForDepth;
+			score = bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
-		if (y > 0 && x < board_size - 1 && board[x + 2][y - 1] == player_2 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
-			score = bridgeAScore - depth * lossOfPointsForDepth;
+		// bridge A2
+		if (x < board_size - 2 && y > 0 && board[x + 2][y - 1] == player_2 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
+			score = bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge B3
+		if (x > 0 && y < board_size - 2 && board[x - 1][y + 2] == player_2 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
+			score = bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge B4
+		if (x < board_size - 1 && y > 1 && board[x + 1][y - 2] == player_2 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
+			score = bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+	}
+	else if (board[x][y] == player_1) {
+		// bridge B1
+		if (x > 1 && y < board_size - 1 && board[x - 2][y + 1] == player_1 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
+			score = -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge B2
+		if (x < board_size - 2 && y > 0 && board[x + 2][y - 1] == player_1 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
+			score = -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge A3
+		if (x > 0 && y < board_size - 2 && board[x - 1][y + 2] == player_1 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
+			score = -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge A4
+		if (x < board_size - 1 && y > 1 && board[x + 1][y - 2] == player_1 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
+			score = -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 	}
 	return score;
@@ -102,7 +130,7 @@ int getPoints(int board[board_size][board_size], int x, int y, int depth) {
 }
 
 int getWinnerPoints (int depth, int player){
-	int score =  winScore - depth * lossOfPointsForDepth;
+	int score = winScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 	if (player == player_2) {
 		return -score;
 	}
