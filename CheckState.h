@@ -140,7 +140,7 @@ int getPointsFromNeighbors(int board[board_size][board_size], int x, int y, int 
 			score = neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D2
-		if (x - 1 < board_size && y + 1 >= 0 && board[x - 1][y + 1] == player_2) {
+		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_2) {
 			score = neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge E1
@@ -166,7 +166,7 @@ int getPointsFromNeighbors(int board[board_size][board_size], int x, int y, int 
 			score = -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D2
-		if (x - 1 < board_size && y + 1 >= 0 && board[x - 1][y + 1] == player_1) {
+		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_1) {
 			score = -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge C1
@@ -183,6 +183,7 @@ int getPointsFromNeighbors(int board[board_size][board_size], int x, int y, int 
 
 int getPoints(int board[board_size][board_size], int x, int y, int depth) {
 	int score = getPointsFromBridges(board, x, y, depth);
+	score += getPointsFromNeighbors(board, x, y, depth);
 	return score;
 }
 
