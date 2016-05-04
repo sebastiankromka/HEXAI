@@ -2,7 +2,6 @@
 #define _MINMAX_H_
 
 int minimax(int board[board_size][board_size], int newX, int newY, int player, int depth, int currentScore) {
-	depth++;
 	int bestMinMaxScore = 0;
 	int oponent;
 	currentScore += getPoints(board, newX, newY, depth);
@@ -18,6 +17,7 @@ int minimax(int board[board_size][board_size], int newX, int newY, int player, i
 	if (checkState(board) != 0) {
 		return currentScore + getWinnerPoints(depth, player);
 	}
+	depth++;
 	if (depth == maxDepth) {
 		return currentScore;
 	}
