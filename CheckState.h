@@ -82,17 +82,33 @@ int checkState(int board[board_size][board_size]) {
 	}
 	return 0;
 }
-
-int getPoints(board, winner, depth) {
+int getPointsFromBridges(int board[board_size][board_size], int x, int y, int depth) {
 	int score = 0;
-	if (winner == player_1) {
-		return winScore - depth * lossOfPointsForDepth;
+	// bridge A
+	if (board[x][y] == player_2) {
+		if (x > 1 && y < board_size - 1 && board[x - 2][y + 1] == player_2 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
+			score = bridgeAScore - depth * lossOfPointsForDepth;
+		}
+		if (y > 0 && x < board_size - 1 && board[x + 2][y - 1] == player_2 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
+			score = bridgeAScore - depth * lossOfPointsForDepth;
+		}
 	}
-	else if (winner == player_2) {
-		return winScore - depth * lossOfPointsForDepth + 1;
-	}
-	// bridge points etc
 	return score;
+}
+
+int getPoints(int board[board_size][board_size], int x, int y, int depth) {
+	int score = getPointsFromBridges(board, x, y, depth);
+	return score;
+}
+
+int getWinnerPoints (int depth, int player){
+	int score =  winScore - depth * lossOfPointsForDepth;
+	if (player == player_2) {
+		return -score;
+	}
+	else {
+		return score;
+	}
 }
 
 #endif
