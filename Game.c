@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include "ConstValues.h"
 #include "Configuration.h"
