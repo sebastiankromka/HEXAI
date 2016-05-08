@@ -70,12 +70,14 @@ void move_player_2(int board[board_size][board_size]) {
 				
 				if (infoLevel > 1) {
 					fprintf(f, "\n[%d][%d]", x, y);
+					printf("\n[%d][%d]", x, y);
 				}
 
 				thisScore = minimax(board, x, y, player_1, depth, 0, f);
 
 				if (infoLevel > 1) {
 					fprintf(f, "\n%d",thisScore);
+					printf("\n%d", thisScore);
 				}
 
 				if (thisScore > bestScore) {
