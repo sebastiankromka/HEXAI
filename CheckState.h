@@ -88,37 +88,53 @@ int getPointsFromBridges(int board[board_size][board_size], int x, int y, int de
 	if (board[x][y] == player_2) {
 		// bridge A1
 		if (x - 2 >= 0 && y + 1 < board_size && board[x - 2][y + 1] == player_2 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
-			score = bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge A2
 		if (x + 2 < board_size && y - 1 >= 0 && board[x + 2][y - 1] == player_2 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
-			score = bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge B1
 		if (x - 1 >= 0 && y + 2 < board_size && board[x - 1][y + 2] == player_2 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
-			score = bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge B2
 		if (x + 1 < board_size && y - 2 >= 0 && board[x + 1][y - 2] == player_2 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
-			score = bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge F1
+		if (x == 1 && y + 1 < board_size && board[0][y] == 0 && board[0][y + 1] == 0) {
+			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge F2
+		if (x == board_size - 2 && y > 0 && board[board_size - 1][y - 1] == 0 && board[board_size - 1][y] == 0) {
+			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 	}
 	else if (board[x][y] == player_1) {
 		// bridge B1
 		if (x - 2 >= 0 && y + 1 < board_size && board[x - 2][y + 1] == player_1 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
-			score = -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge B2
 		if (x + 2 < board_size && y - 1 >= 0 && board[x + 2][y - 1] == player_1 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
-			score = -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge A1
 		if (x - 1 >= 0 && y + 2 < board_size && board[x - 1][y + 2] == player_1 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
-			score = -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge A2
 		if (x + 1 < board_size && y - 2 >= 0 && board[x + 1][y - 2] == player_1 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
-			score = -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge F1
+		if (x > 0 && y == board_size - 2 && board[x - 1][board_size - 1] == 0 && board[x][board_size - 1] == 0) {
+			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		}
+		// bridge F1
+		if (x + 1 < board_size && y == 1 && board[x][0] == 0 && board[x + 1][0] == 0) {
+			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 	}
 	return score;
@@ -129,53 +145,53 @@ int getPointsFromNeighbors(int board[board_size][board_size], int x, int y, int 
 	if (board[x][y] == player_2) {
 		// bridge C1
 		if (x - 1 >= 0 && board[x - 1][y] == player_2) {
-			score = neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge C2
 		if (x + 1 < board_size && board[x + 1][y] == player_2) {
-			score = neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D1
 		if (x - 1 >= 0 && y + 1 < board_size && board[x - 1][y + 1] == player_2) {
-			score = neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D2
 		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_2) {
-			score = neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge E1
 		if (y + 1 < board_size && board[x][y + 1] == player_2) {
-			score = neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge E2
 		if (y - 1 >= 0 && board[x][y - 1] == player_2) {
-			score = neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 	}
 	else if (board[x][y] == player_1) {
 		// bridge E1
 		if (x - 1 >= 0 && board[x - 1][y] == player_1) {
-			score = -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge E2
 		if (x + 1 < board_size && board[x + 1][y] == player_1) {
-			score = -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D1
 		if (x - 1 >= 0 && y + 1 < board_size && board[x - 1][y + 1] == player_1) {
-			score = -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge D2
 		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_1) {
-			score = -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge C1
 		if (y + 1 < board_size && board[x][y + 1] == player_1) {
-			score = -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 		// bridge C2
 		if (y - 1 >= 0 && board[x][y - 1] == player_1) {
-			score = -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+			score += -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
 		}
 	}
 	return score;
