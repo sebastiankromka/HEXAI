@@ -1,42 +1,47 @@
 #ifndef _CHECKSTATE_H_
 #define _CHECKSTATE_H_
 
+int calcPoints(int award, int loss, int depth) {
+	return award * (100 - loss * depth) / 100;
+}
+
 // check connection and returns 0, player_1 or player_2
 // for single point on border
-int checkLineFromPoint(int x, int y, int board[board_size][board_size], int player) {
-	if (player == player_2 && x == board_size - 1) {
-		return player_2; // win player_2
+int checkLineFromPoint(int x, int y, int board[boardSize][boardSize], int player) {
+	if (player == AI1 && x == boardSize - 1) {
+		return AI1; // winner AI1
 	}
-	else if (player == player_1 && y == board_size - 1) {
-		return player_1;
+	else if (player == AI2 && y == boardSize - 1) {
+		return AI2; // winner AI1
 	}
-	board[x][y] = checked; // win player_1
-	int state = 0;
+	int state = noWinner; // no winner
+
+	board[x][y] = checked;
 	//   a b
 	// d # c
 	// e f
 	//a
-	if (y != 0 && board[x][y - 1] == player) {
+	if (state == noWinner && y != 0 && board[x][y - 1] == player) {
 		state = checkLineFromPoint(x, y - 1, board, player);
 	}
 	//b
-	if (state == 0 && y != 0 && x != board_size - 1 && board[x + 1][y - 1] == player) {
+	if (state == noWinner && y != 0 && x != boardSize - 1 && board[x + 1][y - 1] == player) {
 		state = checkLineFromPoint(x + 1, y - 1, board, player);
 	}
 	//c
-	if (state == 0 && x != board_size - 1 && board[x + 1][y] == player) {
+	if (state == noWinner && x != boardSize - 1 && board[x + 1][y] == player) {
 		state = checkLineFromPoint(x + 1, y, board, player);
 	}
 	//d
-	if (state == 0 && x != 0 && board[x - 1][y] == player) {
+	if (state == noWinner && x != 0 && board[x - 1][y] == player) {
 		state = checkLineFromPoint(x - 1, y, board, player);
 	}
 	//e
-	if (state == 0 && y != board_size - 1 && x != 0 && board[x - 1][y + 1] == player) {
+	if (state == noWinner && y != boardSize - 1 && x != 0 && board[x - 1][y + 1] == player) {
 		state = checkLineFromPoint(x - 1, y + 1, board, player);
 	}
 	//f
-	if (state == 0 && y != board_size - 1 && board[x][y + 1] == player) {
+	if (state == noWinner && y != boardSize - 1 && board[x][y + 1] == player) {
 		state = checkLineFromPoint(x, y + 1, board, player);
 	}
 	board[x][y] = player;
@@ -46,16 +51,16 @@ int checkLineFromPoint(int x, int y, int board[board_size][board_size], int play
 // check borders. if player have pawn on 1 site then check 2 site.
 // if both exists then check connection (function checkLineFromPoint)
 // returns 0, player_1 or player_2
-int checkState(int board[board_size][board_size]) {
+int checkState(int board[boardSize][boardSize]) {
 	int state = 0;
-	for (int y = 0; y < board_size; y++) {
+	for (int y = 0; y < boardSize; y++) {
 		// if have down site
-		if (board[board_size - 1][y] == player_2) {
-			for (int y = 0; y < board_size; y++) {
+		if (board[boardSize - 1][y] == AI1) {
+			for (int y = 0; y < boardSize; y++) {
 				// if have up site
-				if (board[0][y] == player_2) {
+				if (board[0][y] == AI1) {
 					// check connection 1 to 2 site
-					state = checkLineFromPoint(0, y, board, player_2);
+					state = checkLineFromPoint(0, y, board, AI1);
 					if (state != 0) {
 						return state;
 					}
@@ -64,14 +69,14 @@ int checkState(int board[board_size][board_size]) {
 			//break;
 		}
 	}
-	for (int x = 0; x < board_size; x++) {
+	for (int x = 0; x < boardSize; x++) {
 		// if have right site
-		if (board[x][board_size - 1] == player_1) {
-			for (int x = 0; x < board_size; x++) {
+		if (board[x][boardSize - 1] == AI2) {
+			for (int x = 0; x < boardSize; x++) {
 				// if have left site
-				if (board[x][0] == player_1) {
+				if (board[x][0] == AI2) {
 					// check connection 1 to 2 site
-					state = checkLineFromPoint(x, 0, board, player_1);
+					state = checkLineFromPoint(x, 0, board, AI2);
 					if (state != 0) {
 						return state;
 					}
@@ -82,130 +87,146 @@ int checkState(int board[board_size][board_size]) {
 	}
 	return 0;
 }
-int getPointsFromBridges(int board[board_size][board_size], int x, int y, int depth) {
+
+int getPointsFromBridges(int maximizedPlayer, int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
 	int score = 0;
 	
-	if (board[x][y] == player_2) {
+	if (board[x][y] == AI1) {
 		// bridge A1
-		if (x - 2 >= 0 && y + 1 < board_size && board[x - 2][y + 1] == player_2 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
-			score += bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x - 2 >= 0 && y + 1 < boardSize && board[x - 2][y + 1] == AI1 && board[x - 1][y] == free && board[x - 1][y + 1] == free) {
+			score += awards[awardForBridgeA];
 		}
 		// bridge A2
-		if (x + 2 < board_size && y - 1 >= 0 && board[x + 2][y - 1] == player_2 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
-			score += bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x + 2 < boardSize && y - 1 >= 0 && board[x + 2][y - 1] == AI1 && board[x + 1][y] == free && board[x + 1][y - 1] == free) {
+			score += awards[awardForBridgeA];
 		}
 		// bridge B1
-		if (x - 1 >= 0 && y + 2 < board_size && board[x - 1][y + 2] == player_2 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
-			score += bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x - 1 >= 0 && y + 2 < boardSize && board[x - 1][y + 2] == AI1 && board[x - 1][y + 1] == free && board[x][y + 1] == free) {
+			score += awards[awardForBridgeB];
 		}
 		// bridge B2
-		if (x + 1 < board_size && y - 2 >= 0 && board[x + 1][y - 2] == player_2 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
-			score += bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x + 1 < boardSize && y - 2 >= 0 && board[x + 1][y - 2] == AI1 && board[x + 1][y - 1] == free && board[x][y - 1] == free) {
+			score += awards[awardForBridgeB];
 		}
-		// bridge F1
-		if (x == 1 && y + 1 < board_size && board[0][y] == 0 && board[0][y + 1] == 0) {
-			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// bridge C1
+		if (x == 1 && y + 1 < boardSize && board[0][y] == free && board[0][y + 1] == free) {
+			score += awards[awardForBridgeC];
 		}
-		// bridge F2
-		if (x == board_size - 2 && y > 0 && board[board_size - 1][y - 1] == 0 && board[board_size - 1][y] == 0) {
-			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// bridge C2
+		if (x == boardSize - 2 && y > 0 && board[boardSize - 1][y - 1] == free && board[boardSize - 1][y] == free) {
+			score += awards[awardForBridgeC];
+		}
+		if (maximizedPlayer != AI1) {
+			score = -score;
 		}
 	}
-	else if (board[x][y] == player_1) {
+	else if (board[x][y] == AI2) {
 		// bridge B1
-		if (x - 2 >= 0 && y + 1 < board_size && board[x - 2][y + 1] == player_1 && board[x - 1][y] == 0 && board[x - 1][y + 1] == 0) {
-			score += -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x - 2 >= 0 && y + 1 < boardSize && board[x - 2][y + 1] == AI2 && board[x - 1][y] == free && board[x - 1][y + 1] == free) {
+			score += awards[awardForBridgeB];
 		}
 		// bridge B2
-		if (x + 2 < board_size && y - 1 >= 0 && board[x + 2][y - 1] == player_1 && board[x + 1][y] == 0 && board[x + 1][y - 1] == 0) {
-			score += -bridgeBScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x + 2 < boardSize && y - 1 >= 0 && board[x + 2][y - 1] == AI2 && board[x + 1][y] == free && board[x + 1][y - 1] == free) {
+			score += awards[awardForBridgeB];
 		}
 		// bridge A1
-		if (x - 1 >= 0 && y + 2 < board_size && board[x - 1][y + 2] == player_1 && board[x - 1][y + 1] == 0 && board[x][y + 1] == 0) {
-			score += -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x - 1 >= 0 && y + 2 < boardSize && board[x - 1][y + 2] == AI2 && board[x - 1][y + 1] == free && board[x][y + 1] == free) {
+			score += awards[awardForBridgeA];
 		}
 		// bridge A2
-		if (x + 1 < board_size && y - 2 >= 0 && board[x + 1][y - 2] == player_1 && board[x + 1][y - 1] == 0 && board[x][y - 1] == 0) {
-			score += -bridgeAScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		if (x + 1 < boardSize && y - 2 >= 0 && board[x + 1][y - 2] == AI2 && board[x + 1][y - 1] == free && board[x][y - 1] == free) {
+			score += awards[awardForBridgeA];
 		}
-		// bridge F1
-		if (x > 0 && y == board_size - 2 && board[x - 1][board_size - 1] == 0 && board[x][board_size - 1] == 0) {
-			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// bridge C1
+		if (x > 0 && y == boardSize - 2 && board[x - 1][boardSize - 1] == free && board[x][boardSize - 1] == free) {
+			score += awards[awardForBridgeC];
 		}
-		// bridge F1
-		if (x + 1 < board_size && y == 1 && board[x][0] == 0 && board[x + 1][0] == 0) {
-			score += bridgeFScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// bridge C1
+		if (x + 1 < boardSize && y == 1 && board[x][0] == free && board[x + 1][0] == free) {
+			score += awards[awardForBridgeC];
+		}
+		score = calcPoints(score, awards[lossOfAwardForDepthInPercent], depth);
+		if (maximizedPlayer != AI2) {
+			score = -score;
 		}
 	}
 	return score;
 }
-int getPointsFromNeighbors(int board[board_size][board_size], int x, int y, int depth) {
+int getPointsFromNeighbors(int maximizedPlayer, int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
 	int score = 0;
 
-	if (board[x][y] == player_2) {
-		// bridge C1
-		if (x - 1 >= 0 && board[x - 1][y] == player_2) {
-			score += neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+	if (board[x][y] == AI1) {
+		// neighbor A1
+		if (x - 1 >= 0 && board[x - 1][y] == AI1) {
+			score += awards[awardForNeighborA];
 		}
-		// bridge C2
-		if (x + 1 < board_size && board[x + 1][y] == player_2) {
-			score += neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor A2
+		if (x + 1 < boardSize && board[x + 1][y] == AI1) {
+			score += awards[awardForNeighborA];
 		}
-		// bridge D1
-		if (x - 1 >= 0 && y + 1 < board_size && board[x - 1][y + 1] == player_2) {
-			score += neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor B1
+		if (x - 1 >= 0 && y + 1 < boardSize && board[x - 1][y + 1] == AI1) {
+			score += awards[awardForNeighborB];
 		}
-		// bridge D2
-		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_2) {
-			score += neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor B2
+		if (x + 1 < boardSize && y - 1 >= 0 && board[x + 1][y - 1] == AI1) {
+			score += awards[awardForNeighborB];
 		}
-		// bridge E1
-		if (y + 1 < board_size && board[x][y + 1] == player_2) {
-			score += neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor C1
+		if (y + 1 < boardSize && board[x][y + 1] == AI1) {
+			score += awards[awardForNeighborC];
 		}
-		// bridge E2
-		if (y - 1 >= 0 && board[x][y - 1] == player_2) {
-			score += neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor C2
+		if (y - 1 >= 0 && board[x][y - 1] == AI1) {
+			score += awards[awardForNeighborC];
+		}
+		score = calcPoints(score, awards[lossOfAwardForDepthInPercent], depth);
+		if (maximizedPlayer != AI1) {
+			score = -score;
 		}
 	}
-	else if (board[x][y] == player_1) {
-		// bridge E1
-		if (x - 1 >= 0 && board[x - 1][y] == player_1) {
-			score += -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+	else {
+		// neighbor C1
+		if (x - 1 >= 0 && board[x - 1][y] == AI2) {
+			score += awards[awardForNeighborC];
 		}
-		// bridge E2
-		if (x + 1 < board_size && board[x + 1][y] == player_1) {
-			score += -neighborEScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor C2
+		if (x + 1 < boardSize && board[x + 1][y] == AI2) {
+			score += awards[awardForNeighborC];
 		}
-		// bridge D1
-		if (x - 1 >= 0 && y + 1 < board_size && board[x - 1][y + 1] == player_1) {
-			score += -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor B1
+		if (x - 1 >= 0 && y + 1 < boardSize && board[x - 1][y + 1] == AI2) {
+			score += awards[awardForNeighborB];
 		}
-		// bridge D2
-		if (x + 1 < board_size && y - 1 >= 0 && board[x + 1][y - 1] == player_1) {
-			score += -neighborDScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor B2
+		if (x + 1 < boardSize && y - 1 >= 0 && board[x + 1][y - 1] == AI2) {
+			score += awards[awardForNeighborB];
 		}
-		// bridge C1
-		if (y + 1 < board_size && board[x][y + 1] == player_1) {
-			score += -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor A1
+		if (y + 1 < boardSize && board[x][y + 1] == AI2) {
+			score += awards[awardForNeighborA];
 		}
-		// bridge C2
-		if (y - 1 >= 0 && board[x][y - 1] == player_1) {
-			score += -neighborCScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
+		// neighbor A2
+		if (y - 1 >= 0 && board[x][y - 1] == AI2) {
+			score += awards[awardForNeighborA];
+		}
+		score = calcPoints(score, awards[lossOfAwardForDepthInPercent], depth);
+		if (maximizedPlayer != AI2) {
+			score = -score;
 		}
 	}
 	return score;
 }
 
-int getPoints(int board[board_size][board_size], int x, int y, int depth) {
-	int score = getPointsFromBridges(board, x, y, depth);
-	score += getPointsFromNeighbors(board, x, y, depth);
+int getPoints(int maximizedPlayer, int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
+	int score = getPointsFromBridges(maximizedPlayer, board, x, y, depth, awards);
+	score += getPointsFromNeighbors(maximizedPlayer, board, x, y, depth, awards);
 	return score;
 }
 
-int getWinnerPoints (int depth, int player){
-	int score = winScore * (100 - lossPercentsOfPointsForDepth * depth) / 100;
-	if (player == player_2) {
+int getWinnerPoints (int maximizedPlayer, int depth, int player, int awards[numberOfAwards]){
+	int score = awards[awardForWin] * (100 - awards[lossOfAwardForDepthInPercent] * depth) / 100;
+	if (player == maximizedPlayer) { // -score for maximizedPlayer because function is called from opponent turn in minmax
 		return -score;
 	}
 	else {

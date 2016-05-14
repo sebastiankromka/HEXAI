@@ -1,48 +1,61 @@
 #include <time.h>
 #include <stdio.h>
-#include "ConstValues.h"
 #include "Configuration.h"
 #include "Output.h"
 #include "CheckState.h"
 #include "MinMax.h"
 
+int getOponent(int player) {
+	if (player == AI1) {
+		return AI2;
+	}
+	else {
+		return AI1;
+	}
+}
 
-// human move
-void move_player_1(int board[board_size][board_size]) {
+void moveHuman(int board[boardSize][boardSize]) {
 	int x;
 	int y;
 	do {
 		scanf("%d", &x);
 		scanf("%d", &y);
-	} while (x >= board_size || y >= board_size || board[x][y] != free);
-	board[x][y] = player_1;
+	} while (x >= boardSize || y >= boardSize || board[x][y] != free);
+	board[x][y] = AI2;
 }
 
-int main() {
+void gameAI1vsHuman(int awardsAI1[numberOfAwards], int firstPlayer, int logLevel) {
 	printf("start game");
 
 	int currentPlayer = firstPlayer;
-	int state = 0;
+	int state;
+	int board[boardSize][boardSize] = { { 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 } };
+	drawBoard(board);
 
 	// game loop
-	drawBoard(board, 0);
-	state = checkState(board);
-	while (state == 0) {
-		if (currentPlayer == player_1) {
-			move_player_1(board);
-			currentPlayer = player_2;
+	do {
+		if (currentPlayer == AI1) {
+			moveAI(AI1, board, awardsAI1, logLevel);
 		}
 		else {
-			move_player_2(board);
-			currentPlayer = player_1;
+			moveHuman(board);
 		}
 		state = checkState(board);
-		drawBoard(board,0);
-	}
+		drawBoard(board);
+		currentPlayer = getOponent(currentPlayer);
+	} while (state == noWinner);
 
-	printf("\nEND GAME state = %d\n", state);
-	printf("Press enter to continue...\n");
+	printf("\nEND GAME state = %d\nPress enter to continue...\n", state);
 	getchar();
 	getchar();
+}
+
+int main() {
+	int awardsAI1[numberOfAwards] = { 1000, 10, 200, 100, 250, 50, 20, 10 };
+	gameAI1vsHuman(awardsAI1, AI2, 1);
 	return 0;
 }

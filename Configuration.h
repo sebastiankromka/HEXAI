@@ -1,32 +1,29 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
 
-#define board_size 8
+#define free 0
+#define AI1 1
+#define AI2 2
+#define checked 4
 
-/*int board[board_size][board_size] = { { 0, 1, 0, 0 },
-									  { 0, 0, 0, 0 },
-									  { 0, 0, 0, 2 },
-									  { 0, 2, 0, 1 } };*/
+#define boardSize 5
+
+#define maxDepth 5
+
+#define noWinner 0
+
+#define numberOfAwards 8
 
 
-int board[board_size][board_size] = { { 1, 1, 1, 1, 1, 1, 1, 2 },
-{ 1, 2, 1, 2, 1, 2, 1, 2 },
-{ 1, 2, 1, 3, 1, 2, 1, 0 },
-{ 0, 2, 0, 0, 0, 0, 0, 0 },
-{ 0, 0, 0, 0, 0, 0, 1, 0 },
-{ 0, 2, 0, 0, 1, 0, 0, 0 },
-{ 0, 0, 1, 0, 0, 0, 0, 0 },
-{ 1, 2, 0, 0, 0, 0, 0, 0 } };
-#define infoLevel 2
+#define awardForWin 0
+#define lossOfAwardForDepthInPercent 1
+#define awardForBridgeA 2
+#define awardForBridgeB 3
+#define awardForBridgeC 4
+#define awardForNeighborA 5
+#define awardForNeighborB 6
+#define awardForNeighborC 7
 
-#define firstPlayer player_2
-
-#define maxDepth 4
-
-#define lossPercentsOfPointsForDepth 10
-#define winScore 100
-#define bridgeAScore 8
-#define bridgeBScore 6
 
 
 #endif

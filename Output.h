@@ -8,31 +8,23 @@ void printDepth(int depth, FILE *f) {
 	}
 }
 
-void drawBoard(int board[board_size][board_size], int depth) {
+void drawBoard(int board[boardSize][boardSize]) {
 	printf("\n");
-	for (int x = 0; x < board_size; x++) {
-		for (int y = 0; y < board_size; y++) {
-			if (y == 0) {
-				for (int i = 0; i < depth; i++) {
-					printf("   ");
-				}
-			}
+	for (int x = 0; x < boardSize; x++) {
+		for (int y = 0; y < boardSize; y++) {
 			printf("%d", board[x][y]);
-			if (y != board_size - 1) {
+			if (y != boardSize - 1) {
 				printf("-");
 			}
 			else {
 				printf("\n");
 			}
 		}
-		if (x < board_size - 1) {
+		if (x < boardSize - 1) {
 			for (int y = 0; ; y++) {
 				if (y == 0) {
-					for (int i = 0; i < depth; i++) {
-						printf("   ");
-					}
 				}
-				if (y < board_size - 1) {
+				if (y < boardSize - 1) {
 					printf("|/");
 				}
 				else {
@@ -44,31 +36,21 @@ void drawBoard(int board[board_size][board_size], int depth) {
 	}
 }
 
-void drawBoardToFile(int board[board_size][board_size], int depth, FILE *f) {
+void drawBoardToFile(int board[boardSize][boardSize], FILE *f) {
 	fprintf(f, "\n");
-	for (int x = 0; x < board_size; x++) {
-		for (int y = 0; y < board_size; y++) {
-			if (y == 0) {
-				for (int i = 0; i < depth; i++) {
-					fprintf(f, "   ");
-				}
-			}
+	for (int x = 0; x < boardSize; x++) {
+		for (int y = 0; y < boardSize; y++) {
 			fprintf(f, "%d", board[x][y]);
-			if (y != board_size - 1) {
+			if (y != boardSize - 1) {
 				fprintf(f, "-");
 			}
 			else {
 				fprintf(f, "\n");
 			}
 		}
-		if (x < board_size - 1) {
+		if (x < boardSize - 1) {
 			for (int y = 0; ; y++) {
-				if (y == 0) {
-					for (int i = 0; i < depth; i++) {
-						fprintf(f, "   ");
-					}
-				}
-				if (y < board_size - 1) {
+				if (y < boardSize - 1) {
 					fprintf(f, "|/");
 				}
 				else {
