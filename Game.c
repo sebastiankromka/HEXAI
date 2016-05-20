@@ -4,8 +4,9 @@
 #include "Output.h"
 #include "CheckState.h"
 #include "MinMax.h"
+#include "geneticAlgorithm.h"
 
-int getOponent(int player) {
+int getOpponent(int player) {
 	if (player == AI1) {
 		return AI2;
 	}
@@ -46,7 +47,7 @@ void gameAI1vsHuman(int awardsAI1[numberOfAwards], int firstPlayer, int logLevel
 		}
 		state = checkState(board);
 		drawBoard(board);
-		currentPlayer = getOponent(currentPlayer);
+		currentPlayer = getOpponent(currentPlayer);
 	} while (state == noWinner);
 
 	printf("\nEND GAME state = %d\nPress enter to continue...\n", state);
@@ -54,8 +55,38 @@ void gameAI1vsHuman(int awardsAI1[numberOfAwards], int firstPlayer, int logLevel
 	getchar();
 }
 
+int gameAI1vsAI2(int awardsAI1[numberOfAwards], int awardsAI2[numberOfAwards], int firstPlayer) {
+	int currentPlayer = firstPlayer;
+	int state;
+	int result = 40;
+	int board[boardSize][boardSize] = { { 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 } };
+	// game loop
+	do {
+		result--;
+		if (currentPlayer == AI1) {
+			moveAI(AI1, board, awardsAI1, 0);
+		}
+		else {
+			moveAI(AI2, board, awardsAI2, 0);
+		}
+		currentPlayer = getOpponent(currentPlayer);
+		state = checkState(board);
+	} while (state == noWinner);
+	if (state == AI2) {
+		result = -result;
+	}
+	return result;
+}
+
 int main() {
-	int awardsAI1[numberOfAwards] = { 1000, 10, 200, 100, 250, 50, 20, 10 };
-	gameAI1vsHuman(awardsAI1, AI2, 1);
+	int awards[numberOfAwards] = { 937, 541, 654, 237, 498, 172, 48, 11 };
+	gameAI1vsHuman(awards, AI1, 1);
+	//geneticAlgorithm();
+	getchar();
+	getchar();
 	return 0;
 }
