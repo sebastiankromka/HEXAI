@@ -2,7 +2,7 @@
 #define _CHECKSTATE_H_
 
 int calcPoints(int award, int loss, int depth) {
-	return award * (100 - loss * depth) / 100;
+	return award * (100 - (loss / 10) * depth) / 100;
 }
 
 // check connection and returns 0, player_1 or player_2
@@ -219,7 +219,8 @@ int getPointsFromNeighbors(int maximizedPlayer, int board[boardSize][boardSize],
 }
 
 int getPoints(int maximizedPlayer, int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
-	int score = getPointsFromBridges(maximizedPlayer, board, x, y, depth, awards);
+	int score = 0;
+	score += getPointsFromBridges(maximizedPlayer, board, x, y, depth, awards);
 	score += getPointsFromNeighbors(maximizedPlayer, board, x, y, depth, awards);
 	return score;
 }
