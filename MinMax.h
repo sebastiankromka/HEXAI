@@ -18,7 +18,7 @@ int minimax(int maximizedPlayer, int board[boardSize][boardSize], int newX, int 
 	}
 
 	depth++;
-	if (depth == maxDepth) {
+	if (depth >= maxDepth) {
 		return currentScore;
 	}
 
@@ -32,7 +32,7 @@ int minimax(int maximizedPlayer, int board[boardSize][boardSize], int newX, int 
 					fprintf(f, "[%d][%d] p%d", x, y, currentPlayer);
 				}
 
-				int thisScore = minimax(maximizedPlayer, board, x, y, getOponent(currentPlayer), depth, currentScore, f, logLevel, awards);
+				int thisScore = minimax(maximizedPlayer, board, x, y, getOpponent(currentPlayer), depth, currentScore, f, logLevel, awards);
 
 				if (logLevel > 2) {
 					printDepth(depth, f);
@@ -74,22 +74,22 @@ void moveAI(int maximizedPlayer, int board[boardSize][boardSize], int awards[num
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
 			if (board[x][y] == free) {
-				board[x][y] = AI1;
+				board[x][y] = maximizedPlayer;
 				
 				// LOG
 				if (logLevel > 0) {
-					printf("\n[%d][%d]", x, y);
+					printf("[%d][%d] = ", x, y);
 					if (logLevel > 1) {
 						fprintf(f, "\n[%d][%d]", x, y);
 					}
 				}
 
 				// MINMAX
-				currentScore = minimax(maximizedPlayer, board, x, y, getOponent(maximizedPlayer), depth, 0, f, logLevel, awards);
+				currentScore = minimax(maximizedPlayer, board, x, y, getOpponent(maximizedPlayer), depth, 0, f, logLevel, awards);
 
 				// LOG
 				if (logLevel > 0) {
-					printf("\n%d", currentScore);
+					printf("%d\n", currentScore);
 					if (logLevel > 1) {
 						fprintf(f, "\n%d", currentScore);
 					}
@@ -116,7 +116,7 @@ void moveAI(int maximizedPlayer, int board[boardSize][boardSize], int awards[num
 	}
 	
 	// SET BEST MOVE
-	board[bestX][bestY] = AI1;
+	board[bestX][bestY] = maximizedPlayer;
 }
 
 #endif
