@@ -8,6 +8,25 @@ void printDepth(int depth, FILE *f) {
 	}
 }
 
+void printArray(int array[numberOfAwards + 1], FILE *f) {
+	for (int x = 0; x <= numberOfAwards; x++) {
+		fprintf(f, "%d ", array[x]);
+	}
+	fprintf(f, "\n");
+}
+
+void printALLAwards(int awards[populationSize][numberOfAwards + 1], FILE *f) {
+	for (int x = 0; x < populationSize; x++) {
+		printArray(awards[x], f);
+	}
+}
+
+void printALLRivals(int rivals[rivalsSize][numberOfAwards + 1], FILE *f) {
+	for (int x = 0; x < rivalsSize; x++) {
+		printArray(rivals[x], f);
+	}
+}
+
 void drawBoard(int board[boardSize][boardSize]) {
 	printf("\n");
 	for (int x = 0; x < boardSize; x++) {
