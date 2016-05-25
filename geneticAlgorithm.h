@@ -1,19 +1,6 @@
 #ifndef _GENETICALGORITHM_H_
 #define _GENETICALGORITHM_H_
 
-int overwriteArray(int destination[numberOfAwards + 1], int source[numberOfAwards + 1]) {
-	for (int a = 0; a <= numberOfAwards; a++) {
-		destination[a] = source[a];
-	}
-}
-
-int swapArrays(int array1[numberOfAwards + 1], int array2[numberOfAwards + 1]) {
-	int arraytmp[numberOfAwards + 1];
-	overwriteArray(arraytmp, array1);
-	overwriteArray(array1, array2);
-	overwriteArray(array2, arraytmp);
-}
-
 int selection(int population[populationSize][numberOfAwards + 1]) {
 	for (int belowIndex = populationSize / 2; belowIndex < populationSize; belowIndex++) {
 		for (int aboveIndex = 0; aboveIndex < populationSize / 2; aboveIndex++) {
