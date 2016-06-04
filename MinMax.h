@@ -1,57 +1,99 @@
 #ifndef _MINMAX_H_
 #define _MINMAX_H_
 
-int minimax(int maximizedPlayer, int board[boardSize][boardSize], int newX, int newY, int currentPlayer, int depth, int currentScore, FILE *f, int logLevel, int awards[numberOfAwards]) {
-
-	int bestMinMaxScore = 0;
-	currentScore += getPoints(maximizedPlayer, board, newX, newY, depth, awards);
-
-	if (currentPlayer == maximizedPlayer) {
-		bestMinMaxScore = -800000;
-	}
-	else {
-		bestMinMaxScore = 800000;
-	}
-
-	if (checkState(board) != 0) {
-		return currentScore + getWinnerPoints(maximizedPlayer, depth, currentPlayer, awards);
-	}
+int minimax(int board[boardSize][boardSize], int minMaxPlayer, int depth, int previousPoints, FILE *f, int logLevel, int awards[numberOfAwards]) {
 
 	depth++;
-	if (depth >= maxDepth) {
-		return currentScore;
+
+	// VARIABLES
+	int state;
+	int forwardPoints;
+	int backPoints;
+	int bestScore;
+	if (minMaxPlayer == AI1) {
+		bestScore = -1000000;
+	}
+	else {
+		bestScore = 1000000;
 	}
 
+	//printf("\ndepth %d, player %d\n", depth, minMaxPlayer);
+	//drawBoard(board);
+
+	// FOR ALL FREE PLACES
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
 			if (board[x][y] == free) {
-				board[x][y] = currentPlayer;
 
+				// LOG
 				if (logLevel > 2) {
 					printDepth(depth, f);
-					fprintf(f, "[%d][%d] p%d", x, y, currentPlayer);
+					fprintf(f, "[%d][%d] player:%d", x, y, minMaxPlayer);
 				}
 
-				int thisScore = minimax(maximizedPlayer, board, x, y, getOpponent(currentPlayer), depth, currentScore, f, logLevel, awards);
+				// SET PLAYER
+				board[x][y] = minMaxPlayer;
+				
+				if (minMaxPlayer == AI2) {
+					// CHANGE PLAYER AI2 TO AI1
+					swapAI1andAI2(board);
+					// ADD POINTS
+					forwardPoints = previousPoints - getPoints(board, (boardSize - 1 - y), (boardSize - 1 - x), depth, awards);
+				}
+				else {
+					// ADD POINTS
+					forwardPoints = previousPoints + getPoints(board, x, y, depth, awards);
+				}
 
+				// GET STATE
+				state = checkState(board);
+
+				if (minMaxPlayer == AI2) {
+					// BACK PLAYER AI2 TO AI2
+					swapAI1andAI2(board);
+				}
+
+				// IF WIN AI1 -> ADD WIN POINTS (ALWAYS AI1 OR NO WIN BECAUSE OF BOARD ROTATE)
+				if (state != noWinner) {
+					if (state == minMaxPlayer) {
+						backPoints = forwardPoints + getWinnerPoints(depth, awards);
+					}
+					else if (state != minMaxPlayer) {
+						backPoints = forwardPoints - getWinnerPoints(depth, awards);
+					}
+				}
+
+				// IF DEPTH IS MAX -> STOP ALGORITHM
+				else if (depth >= maxDepth) {
+					backPoints = forwardPoints;
+				}
+				// ELSE -> MINMAX
+				else {
+					backPoints = minimax(board, getOpponent(minMaxPlayer), depth, forwardPoints, f, logLevel, awards);
+				}
+
+				// LOG
 				if (logLevel > 2) {
 					printDepth(depth, f);
-					fprintf(f, "%d", thisScore);
+					fprintf(f, "%d", backPoints);
 				}
 
-				if ((currentPlayer != maximizedPlayer && thisScore < bestMinMaxScore) || (currentPlayer == maximizedPlayer && thisScore > bestMinMaxScore)) {
-					bestMinMaxScore = thisScore;
+				// FIND BEST MOVE
+				if ((minMaxPlayer == AI2 && backPoints < bestScore) || (minMaxPlayer == AI1 && backPoints > bestScore)) {
+					bestScore = backPoints;
 				}
+
+				// CLEAN
 				board[x][y] = free;
 			}
 		}
 	}
 
-	return bestMinMaxScore;
+	return bestScore;
 }
 
-void moveAI(int maximizedPlayer, int board[boardSize][boardSize], int awards[numberOfAwards], int logLevel) {
-
+void moveAI(int minMaxPlayer, int board[boardSize][boardSize], int awards[numberOfAwards], int logLevel) {
+	
 	// LOG
 	FILE *f;
 	if (logLevel > 1) {
@@ -64,43 +106,70 @@ void moveAI(int maximizedPlayer, int board[boardSize][boardSize], int awards[num
 		drawBoardToFile(board, f);
 	}
 
-	int depth = 0;
-	int bestX = -1;
-	int bestY = -1;
+	// VARIABLES
+	int state;
+	int bestX;
+	int bestY;
+	int forwardPoints;
+	int backPoints;
 	int bestScore = -1000000;
-	int currentScore = 0;
+
+	if (minMaxPlayer == AI2) {
+		// CHANGE PLAYER AI2 TO AI1
+		swapAI1andAI2(board);
+	}
 
 	// FOR ALL FREE PLACES
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
 			if (board[x][y] == free) {
-				board[x][y] = maximizedPlayer;
-				
+
 				// LOG
 				if (logLevel > 0) {
 					printf("[%d][%d] = ", x, y);
 					if (logLevel > 1) {
-						fprintf(f, "\n[%d][%d]", x, y);
+						fprintf(f, "\nm[%d][%d]", x, y);
 					}
 				}
 
-				// MINMAX
-				currentScore = minimax(maximizedPlayer, board, x, y, getOpponent(maximizedPlayer), depth, 0, f, logLevel, awards);
+				// SET PLAYER
+				board[x][y] = AI1;
+
+				// ADD POINTS
+				forwardPoints = getPoints(board, x, y, 0, awards);
+
+				// IF WIN AI1 -> ADD WIN POINTS (ALWAYS AI1 OR NO WIN BECAUSE OF BOARD ROTATE)
+				int state = checkState(board);
+				if (state == AI1) {
+					backPoints = forwardPoints + getWinnerPoints(0, awards);
+				}
+				else if (state == AI2) {
+					backPoints = forwardPoints - getWinnerPoints(0, awards);
+				}
+				else if (0 >= maxDepth) {
+					backPoints = forwardPoints;
+				}
+				// ELSE -> MINMAX
+				else {
+					backPoints = minimax(board, AI2, 0, forwardPoints, f, logLevel, awards);
+				}
 
 				// LOG
 				if (logLevel > 0) {
-					printf("%d\n", currentScore);
+					printf("%d\n", backPoints);
 					if (logLevel > 1) {
-						fprintf(f, "\n%d", currentScore);
+						fprintf(f, "\n%d", backPoints);
 					}
 				}
 
 				// FIND BEST MOVE
-				if (currentScore > bestScore) {
-					bestScore = currentScore;
+				if (backPoints > bestScore) {
+					bestScore = backPoints;
 					bestX = x;
 					bestY = y;
 				}
+
+				// CLEAN
 				board[x][y] = free;
 			}
 		}
@@ -116,7 +185,12 @@ void moveAI(int maximizedPlayer, int board[boardSize][boardSize], int awards[num
 	}
 	
 	// SET BEST MOVE
-	board[bestX][bestY] = maximizedPlayer;
+	board[bestX][bestY] = AI1;
+
+	if (minMaxPlayer == AI2) {
+		// BACK PLAYER AI2 TO AI2
+		swapAI1andAI2(board);
+	}
 }
 
 #endif
