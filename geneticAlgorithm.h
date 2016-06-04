@@ -108,8 +108,8 @@ int geneticAlgorithm() {
 		for (int p = 0; p < populationSize; p++) {
 			population[p][numberOfAwards] = 0; // clean result
 			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
-				int result = gameAI1vsAI2(population[p], rivals[r], AI1); // plus result
-				result -= gameAI1vsAI2(rivals[r], population[p], AI1); // minus reival result 
+				int result = gameAI1vsAI2(population[p], rivals[r], AI1, 0); // plus result
+				result -= gameAI1vsAI2(rivals[r], population[p], AI1, 0); // minus reival result 
 
 				fprintf(f, "%d ", result);
 				population[p][numberOfAwards] += result;                     //^
