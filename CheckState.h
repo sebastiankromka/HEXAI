@@ -102,6 +102,14 @@ int getPointsFromBridges(int board[boardSize][boardSize], int x, int y, int awar
 	if (x + 2 < boardSize && y - 1 >= 0 && board[x + 2][y - 1] == AI1 && board[x + 1][y] == free && board[x + 1][y - 1] == free) {
 		score += awards[awardForBridgeA];
 	}
+	// bridge A1 wall
+	if (x == 1 && y + 1 < boardSize && board[0][y] == free && board[0][y + 1] == free) {
+		score += awards[awardForBridgeC];
+	}
+	// bridge A2 wall
+	if (x == boardSize - 2 && y > 0 && board[boardSize - 1][y - 1] == free && board[boardSize - 1][y] == free) {
+		score += awards[awardForBridgeC];
+	}
 	// bridge B1
 	if (x - 1 >= 0 && y + 2 < boardSize && board[x - 1][y + 2] == AI1 && board[x - 1][y + 1] == free && board[x][y + 1] == free) {
 		score += awards[awardForBridgeB];
@@ -109,14 +117,6 @@ int getPointsFromBridges(int board[boardSize][boardSize], int x, int y, int awar
 	// bridge B2
 	if (x + 1 < boardSize && y - 2 >= 0 && board[x + 1][y - 2] == AI1 && board[x + 1][y - 1] == free && board[x][y - 1] == free) {
 		score += awards[awardForBridgeB];
-	}
-	// bridge C1
-	if (x == 1 && y + 1 < boardSize && board[0][y] == free && board[0][y + 1] == free) {
-		score += awards[awardForBridgeC];
-	}
-	// bridge C2
-	if (x == boardSize - 2 && y > 0 && board[boardSize - 1][y - 1] == free && board[boardSize - 1][y] == free) {
-		score += awards[awardForBridgeC];
 	}
 
 	return score;
