@@ -91,7 +91,7 @@ int checkState(int board[boardSize][boardSize]) {
 	return 0;
 }
 
-int getPointsFromBridges(int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
+int getPointsFromBridges(int board[boardSize][boardSize], int x, int y, int awards[numberOfAwards]) {
 	int score = 0;
 
 	// bridge A1
@@ -122,7 +122,7 @@ int getPointsFromBridges(int board[boardSize][boardSize], int x, int y, int dept
 	return score;
 }
 
-int getPointsFromNeighbors(int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
+int getPointsFromNeighbors(int board[boardSize][boardSize], int x, int y, int awards[numberOfAwards]) {
 	int score = 0;
 	// neighbor A1
 	if (x - 1 >= 0 && board[x - 1][y] == AI1) {
@@ -152,17 +152,103 @@ int getPointsFromNeighbors(int board[boardSize][boardSize], int x, int y, int de
 	return score;
 }
 
+int addPath(int x, int y, int board[boardSize][boardSize], int previousPawn) {
+	
+	// CLEAN
+	for (int i = 0; i < boardSize + 1; i++) {
+		longestPathArray[currentPath][i] = longestPathArray[previousPawn][i];
+	}
+	// ADD CURRENT LEVEL
+	longestPathArray[currentPath][x] = 1;
+	// ADD NUMBER OF PAWNS + 1
+	longestPathArray[currentPath][boardSize]++;
+
+	int myID = currentPath;
+	currentPath++;
+	board[x][y] = checked;
+
+	//   a b
+	// f # c
+	// e d
+
+	//a
+	if (x > 0 && board[x - 1][y] == AI1) {
+		addPath(x - 1, y, board, myID);
+	}
+	//b
+	if (x > 0 && y < boardSize - 1 && board[x - 1][y + 1] == AI1) {
+		addPath(x - 1, y + 1, board, myID);
+	}
+	//c
+	if (y < boardSize - 1 && board[x][y + 1] == AI1) {
+		addPath(x, y + 1, board, myID);
+	}
+	//d
+	if (x < boardSize - 1 && board[x + 1][y] == AI1) {
+		addPath(x + 1, y, board, myID);
+	}
+	//e
+	if (x < boardSize - 1 && y > 0 && board[x + 1][y - 1] == AI1) {
+		addPath(x + 1, y - 1, board, myID);
+	}
+	//f
+	if (y > 0 && board[x][y - 1] == AI1) {
+		addPath(x, y - 1, board, myID);
+	}
+	board[x][y] = AI1;
+}
+
+calcPointsFromPath(int levels, int pawns, int awards[numberOfAwards]) {
+	return awards[awardForLevel] * levels - awards[lossOfAwardForPawns] * pawns;
+}
+
+int getPointsFromLongestPath(int board[boardSize][boardSize], int x, int y, int awards[numberOfAwards]) {
+	currentPath = 0;
+	int bestScore = -1000000;
+	// CLEAN FIRST
+	for (int i = 0; i < boardSize + 1; i++) {
+		longestPathArray[currentPath][i] = 0;
+	}
+	addPath(x, y, board, 0, 0);
+
+	// SINGLE
+	for (int p1 = 0; p1 < currentPath; p1++) {
+		int levels = 0;
+		for (int i = 0; i < boardSize; i++) {
+			if (longestPathArray[p1][i] == 1) {
+				levels++;
+			}
+		}
+		int currentResult = calcPointsFromPath(levels, longestPathArray[p1][boardSize], awards);
+		if (currentResult > bestScore) {
+			bestScore = currentResult;
+		}
+	}
+
+	// PAIRS
+	for (int p1 = 1; p1 < currentPath; p1++) {		
+		for (int p2 = p1 + 1; p2 < currentPath; p2++) {
+			int levels = 0;
+			for (int i = 0; i < boardSize; i++) {
+				if (longestPathArray[p1][i] == 1 || longestPathArray[p2][i] == 1) {
+					levels++;
+				}
+			}
+			int currentResult = calcPointsFromPath(levels, longestPathArray[p1][boardSize] + longestPathArray[p2][boardSize] - 1, awards);
+			if (currentResult > bestScore) {
+				bestScore = currentResult;
+			}
+		}
+	}
+	return bestScore;
+}
+
 int getPoints(int board[boardSize][boardSize], int x, int y, int depth, int awards[numberOfAwards]) {
 	int score = 0;
-	score += getPointsFromBridges(board, x, y, depth, awards);
-	score += getPointsFromNeighbors(board, x, y, depth, awards);
+	score += getPointsFromBridges(board, x, y, awards);
+	score += getPointsFromNeighbors(board, x, y, awards);
+	score += getPointsFromLongestPath(board, x, y, awards);
 	score = calcPoints(score, awards[lossOfAwardForDepthInPercent], depth);
-	if (score != 0) { // TODELETE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2
-		//drawBoard(board);
-		
-		//printf("%d\n", score);
-		//int breaka = 1;
-	}
 	return score;
 }
 
