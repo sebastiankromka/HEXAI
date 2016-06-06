@@ -125,9 +125,9 @@ void moveAI(int minMaxPlayer, int board[boardSize][boardSize], int awards[number
 			if (board[x][y] == free) {
 
 				// LOG
-				if (logLevel > 0) {
+				if (logLevel > 1) {
 					printf("[%d][%d] = ", x, y);
-					if (logLevel > 1) {
+					if (logLevel > 2) {
 						fprintf(f, "\nm[%d][%d]", x, y);
 					}
 				}
@@ -155,9 +155,9 @@ void moveAI(int minMaxPlayer, int board[boardSize][boardSize], int awards[number
 				}
 
 				// LOG
-				if (logLevel > 0) {
+				if (logLevel > 1) {
 					printf("%d\n", backPoints);
-					if (logLevel > 1) {
+					if (logLevel > 2) {
 						fprintf(f, "\n%d", backPoints);
 					}
 				}
@@ -176,9 +176,9 @@ void moveAI(int minMaxPlayer, int board[boardSize][boardSize], int awards[number
 	}
 
 	// LOG
-	if (logLevel > 0) {
+	if (logLevel > 1) {
 		printf("\nchosen [%d][%d] - score: %d", bestX, bestY, bestScore);
-		if (logLevel > 1) {
+		if (logLevel > 2) {
 			fprintf(f, "\nchosen [%d][%d] - score: %d", bestX, bestY, bestScore);
 			fclose(f);
 		}
