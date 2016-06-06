@@ -21,32 +21,34 @@ int checkLineFromPoint(int x, int y, int board[boardSize][boardSize], int player
 
 	board[x][y] = checked;
 	//   a b
-	// d # c
-	// e f
+	// f # c
+	// e d
+
 	//a
-	if (state == noWinner && y != 0 && board[x][y - 1] == player) {
-		state = checkLineFromPoint(x, y - 1, board, player);
-	}
-	//b
-	if (state == noWinner && y != 0 && x != boardSize - 1 && board[x + 1][y - 1] == player) {
-		state = checkLineFromPoint(x + 1, y - 1, board, player);
-	}
-	//c
-	if (state == noWinner && x != boardSize - 1 && board[x + 1][y] == player) {
-		state = checkLineFromPoint(x + 1, y, board, player);
-	}
-	//d
 	if (state == noWinner && x != 0 && board[x - 1][y] == player) {
 		state = checkLineFromPoint(x - 1, y, board, player);
 	}
-	//e
+	//b
 	if (state == noWinner && y != boardSize - 1 && x != 0 && board[x - 1][y + 1] == player) {
 		state = checkLineFromPoint(x - 1, y + 1, board, player);
 	}
-	//f
+	//c
 	if (state == noWinner && y != boardSize - 1 && board[x][y + 1] == player) {
 		state = checkLineFromPoint(x, y + 1, board, player);
 	}
+	//d
+	if (state == noWinner && x != boardSize - 1 && board[x + 1][y] == player) {
+		state = checkLineFromPoint(x + 1, y, board, player);
+	}
+	//e
+	if (state == noWinner && y != 0 && x != boardSize - 1 && board[x + 1][y - 1] == player) {
+		state = checkLineFromPoint(x + 1, y - 1, board, player);
+	}
+	//f
+	if (state == noWinner && y != 0 && board[x][y - 1] == player) {
+		state = checkLineFromPoint(x, y - 1, board, player);
+	}
+	
 	board[x][y] = player;
 	return state;
 }
