@@ -21,64 +21,37 @@ void moveHuman(int board[boardSize][boardSize], int symbol) {
 	board[x][y] = symbol;
 }
 
-void gameAI1vsHuman(int awardsAI1[numberOfAwards], int firstPlayer, int logLevel) {
-	printf("start game");
+void gameAIvsHuman(int awardsAI1[numberOfAwards], int AIplayer, int firstPlayer, int logLevel) {
 
 	int currentPlayer = firstPlayer;
 	int state;
 	int board[boardSize][boardSize] = { { 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 } };
-	drawBoard(board);
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 2, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
+										{ 0, 0, 0, 0, 0 } };
+	if (logLevel > 0) {
+		drawBoard(board);
+	}
 
 	// game loop
 	do {
-		if (currentPlayer == AI1) {
-			moveAI(AI1, board, awardsAI1, logLevel);
+		if (currentPlayer == AIplayer) {
+			moveAI(AIplayer, board, awardsAI1, logLevel);
 		}
 		else {
-			moveHuman(board, AI2);
+			moveHuman(board, getOpponent(AIplayer));
 		}
 		state = checkState(board);
-		drawBoard(board);
+		if (logLevel > 0) {
+			drawBoard(board);
+		}
 		currentPlayer = getOpponent(currentPlayer);
 	} while (state == noWinner);
 
-	printf("\nEND GAME state = %d\nPress enter to continue...\n", state);
-	getchar();
-	getchar();
-}
-
-void gameAI2vsHuman(int awardsAI1[numberOfAwards], int firstPlayer, int logLevel) {
-	printf("start game");
-
-	int currentPlayer = firstPlayer;
-	int state;
-	int board[boardSize][boardSize] = { { 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 } };
-	drawBoard(board);
-
-	// game loop
-	do {
-		if (currentPlayer == AI2) {
-			moveAI(AI2, board, awardsAI1, logLevel);
-		}
-		else {
-			moveHuman(board, AI1);
-		}
-		state = checkState(board);
-		drawBoard(board);
-		currentPlayer = getOpponent(currentPlayer);
-	} while (state == noWinner);
-
-	printf("\nEND GAME state = %d\nPress enter to continue...\n", state);
-	getchar();
-	getchar();
+	if (logLevel > 0) {
+		printf("\nEND GAME state = %d\n", state);
+	}
 }
 
 int gameAI1vsAI2(int awardsAI1[numberOfAwards], int awardsAI2[numberOfAwards], int firstPlayer, int logLevel) {
