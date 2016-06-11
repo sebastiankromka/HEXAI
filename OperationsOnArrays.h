@@ -2,7 +2,7 @@
 #define _OPERATIONSONARRAYS_H_
 
 
-void overwriteArray(int destination[numberOfAwards + 1], int source[numberOfAwards + 1]) {
+void overwriteArray(int source[numberOfAwards + 1], int destination[numberOfAwards + 1]) {
 	for (int a = 0; a <= numberOfAwards; a++) {
 		destination[a] = source[a];
 	}
@@ -10,9 +10,9 @@ void overwriteArray(int destination[numberOfAwards + 1], int source[numberOfAwar
 
 void swapArrays(int array1[numberOfAwards + 1], int array2[numberOfAwards + 1]) {
 	int arraytmp[numberOfAwards + 1];
-	overwriteArray(arraytmp, array1);
-	overwriteArray(array1, array2);
-	overwriteArray(array2, arraytmp);
+	overwriteArray(array1, arraytmp);
+	overwriteArray(array2, array1);
+	overwriteArray(arraytmp, array2);
 }
 
 void copyBoardWithSwapPlayers(int board[boardSize][boardSize], int tmpBoard[boardSize][boardSize]) {
