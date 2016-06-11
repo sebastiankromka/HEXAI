@@ -27,7 +27,7 @@ void gameAIvsHuman(int awardsAI1[numberOfAwards], int AIplayer, int firstPlayer,
 	int state;
 	int board[boardSize][boardSize] = { { 0, 0, 0, 0, 0 },
 										{ 0, 0, 0, 0, 0 },
-										{ 0, 0, 2, 0, 0 },
+										{ 0, 0, 0, 0, 0 },
 										{ 0, 0, 0, 0, 0 },
 										{ 0, 0, 0, 0, 0 } };
 	if (logLevel > 0) {
