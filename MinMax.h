@@ -96,7 +96,7 @@ void moveAI(int minMaxPlayer, int board[boardSize][boardSize], int awards[number
 	
 	// LOG
 	FILE *f;
-	if (logLevel > 1) {
+	if (logLevel > 2) {
 		time_t now;
 		now = time(NULL);
 		struct tm *t = localtime(&now);
