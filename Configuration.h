@@ -4,8 +4,8 @@
 #define free 0
 #define AI1 1
 #define AI2 2
-#define noWinner 0
 
+#define noWinner 0
 #define checked 4
 
 #define boardSize 5
@@ -13,14 +13,10 @@
 int longestPathArray[longestPathBoardSize][boardSize + 1] = { { 0 } };
 int currentPath;
 
-
 #define populationSize 10
 #define rivalsSize 10
-#define numberOfTests 1000
 
-#define maxDepth 4
-
-
+#define maxDepth 2
 
 #define numberOfAwards 10
 #define maxAwardValue 1000

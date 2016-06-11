@@ -15,7 +15,7 @@ int selection(int population[populationSize][numberOfAwards + 1]) {
 int crossover(int population[populationSize][numberOfAwards + 1]) {
 	int tempArrayOfArrays[populationSize / 2][numberOfAwards + 1];
 	for (int test = 0; test < populationSize / 2; test++) {
-		overwriteArray(tempArrayOfArrays[test], population[test]);
+		overwriteArray(population[test], tempArrayOfArrays[test]);
 	}
 	int parrent2;
 	for (int parrent1 = 0; parrent1 < populationSize / 2; parrent1++) {
@@ -67,24 +67,38 @@ void addTheBestFromPopulationToRivals(int population[populationSize][numberOfAwa
 			theBestFromPopulation = p;
 		}
 	}
-	overwriteArray(rivals[rivalNumber], population[theBestFromPopulation]);
+	overwriteArray(population[theBestFromPopulation], rivals[rivalNumber]);
 }
 
-int geneticAlgorithm() {
+int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, int frequencyOverwritingFromPopulation) {
 
-	FILE *f;
-	char logPath[] = "geneticAlgorithm.log";
-	f = fopen(logPath, "w");
+	// basic validation
+	if (numberOfGenerations < 1 || nominator < 0 || denominator < 1 || frequencyOverwritingFromPopulation < 0) {
+		return;
+	}
 	
+	char logPath[] = "geneticAlgorithm_n_N_d_D_o_O.log";
+	logPath[19] = nominator + '0';
+	logPath[23] = denominator + '0';
+	logPath[27] = frequencyOverwritingFromPopulation + '0';
+	FILE *f = fopen(logPath, "r");
+	if (f == NULL)
+	{
+		printf("log file exists");
+		return;
+	}
+	fclose(f);
+	f = fopen(logPath, "w");
 	srand(time(NULL));
 
+	// INITIALIZTION
+	// TODO load from file
 	int population[populationSize][numberOfAwards + 1] = { 0 }; // + 1 for results
 	for (int p = 0; p < populationSize; p++) {
 		for (int a = 0; a < numberOfAwards; a++) {
 			population[p][a] = rand() % maxAwardValue;
 		}
 	}
-
 	int rivals[rivalsSize][numberOfAwards + 1] = { 0 };
 	for (int r = 0; r < rivalsSize; r++) {
 		for (int a = 0; a < numberOfAwards; a++) {
@@ -92,6 +106,7 @@ int geneticAlgorithm() {
 		}
 	}
 
+	// LOG
 	fprintf(f, "------------------------------------------------------\n\nstarting values\n\n");
 	printALLAwards(population, f);
 	fprintf(f, "\n");
@@ -101,28 +116,43 @@ int geneticAlgorithm() {
 	printf("\n");
 	fclose(f);
 
-	for (int t = 0; t < numberOfTests; t++) {
+	for (int generation = 1; generation <= numberOfGenerations; generation++) {
+
+		// LOG
 		f = fopen(logPath, "a");
-		fprintf(f, "------------------------------------------------------\n\ntest %d\n\n", t);
-		printf("------------------------------------------------------\n\ntest %d\n\n", t);
-		for (int r = 0; r < rivalsSize; r++) { // clean results
+		fprintf(f, "------------------------------------------------------\n\ngeneration %d\n\n", generation);
+		printf("------------------------------------------------------\n\ngeneration %d\n\n", generation);
+
+		for (int r = 0; r < rivalsSize; r++) { // clean previous results
 			rivals[r][numberOfAwards] = 0;
 		}
-		for (int p = 0; p < populationSize; p++) {
-			population[p][numberOfAwards] = 0; // clean result
-			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
-				int result = gameAI1vsAI2(population[p], rivals[r], AI1, 0); // plus result
-				result -= gameAI1vsAI2(rivals[r], population[p], AI1, 0); // minus reival result 
 
+		for (int p = 0; p < populationSize; p++) {
+
+			population[p][numberOfAwards] = 0; // clean previous result
+
+			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
+
+				// GAME
+				int result = gameAI1vsAI2(population[p], rivals[r], AI1, 0); // plus result
+				result -= gameAI1vsAI2(rivals[r], population[p], AI1, 0); // minus rieval result 
+
+				// LOG
 				fprintf(f, "%d ", result);
 				printf("%d ", result);
-				population[p][numberOfAwards] += result;                     //^
+
+				// UPDATE RESULTS
+				population[p][numberOfAwards] += result; // add result
 				rivals[r][numberOfAwards] -= result; // minus because it's rival
 			}
+
+			// LOG
 			fprintf(f, "\n");
 			printf("\n");
+
 		}
 
+		// LOG
 		fprintf(f, "\n");
 		printf("\n");
 		printALLAwards(population, f);
@@ -132,21 +162,25 @@ int geneticAlgorithm() {
 		fprintf(f, "\n");
 		printf("\n");
 
-		int controlResult = 0;
-		for (int p = rivalsSize / 3; p < rivalsSize; p++) {
-			controlResult -= rivals[p][numberOfAwards];
-		}
-		fprintf(f, "control = %d\n\n", controlResult);
-		printf("control = %d\n\n", controlResult);
-
 		selection(population);
-		crossover(population);
-		mutation(population);
-		if (t % 10 == 9) {
-			for (int p = 0; p < (rivalsSize + 1) * 2 / 3; p++) {
-				overwriteArray(rivals[p], population[p]);
+
+		// UPDATE RIVALS
+		for (int p = 0; p < (rivalsSize + 1) * nominator / denominator; p++) { // random
+			for (int a = 0; a < numberOfAwards; a++) {
+				rivals[p][a] = rand() % maxAwardValue;
 			}
 		}
+		if (frequencyOverwritingFromPopulation != 0 && generation % frequencyOverwritingFromPopulation == 0) { // from poluation
+			for (int p = (rivalsSize + 1) * nominator / denominator; p < rivalsSize; p++) {
+				overwriteArray(population[p], rivals[p]);
+			}
+		}
+
+		crossover(population);
+
+		mutation(population);
+
+		// LOG
 		fclose(f);
 	}
 }
