@@ -9,7 +9,7 @@
 #define checked 4
 
 #define boardSize 5
-#define longestPathBoardSize 1000
+#define longestPathBoardSize 100000
 int longestPathArray[longestPathBoardSize][boardSize + 1] = { { 0 } };
 int currentPath;
 
@@ -18,7 +18,7 @@ int currentPath;
 #define rivalsSize 10
 #define numberOfTests 1000
 
-#define maxDepth 5
+#define maxDepth 4
 
 
 

@@ -154,8 +154,12 @@ int getPointsFromNeighbors(int board[boardSize][boardSize], int x, int y, int aw
 	return score;
 }
 
-int addPath(int x, int y, int board[boardSize][boardSize], int previousPawn) {
-	
+void addPath(int x, int y, int board[boardSize][boardSize], int previousPawn) {
+	if (currentPath == longestPathBoardSize) {
+		printf("full longestPathBoard %d [%d][%d]\n", currentPath, x, y);
+		drawBoard(board);
+		return;
+	}
 	// CLEAN
 	for (int i = 0; i < boardSize + 1; i++) {
 		longestPathArray[currentPath][i] = longestPathArray[previousPawn][i];
@@ -164,10 +168,11 @@ int addPath(int x, int y, int board[boardSize][boardSize], int previousPawn) {
 	longestPathArray[currentPath][x] = 1;
 	// ADD NUMBER OF PAWNS + 1
 	longestPathArray[currentPath][boardSize]++;
+	
+	board[x][y] = checked;
 
 	int myID = currentPath;
 	currentPath++;
-	board[x][y] = checked;
 
 	//   a b
 	// f # c
@@ -207,10 +212,12 @@ calcPointsFromPath(int levels, int pawns, int awards[numberOfAwards]) {
 int getPointsFromLongestPath(int board[boardSize][boardSize], int x, int y, int awards[numberOfAwards]) {
 	currentPath = 0;
 	int bestScore = -1000000;
+
 	// CLEAN FIRST
 	for (int i = 0; i < boardSize + 1; i++) {
 		longestPathArray[currentPath][i] = 0;
 	}
+
 	addPath(x, y, board, 0, 0);
 
 	// SINGLE

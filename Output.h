@@ -11,8 +11,10 @@ void printDepth(int depth, FILE *f) {
 void printArray(int array[numberOfAwards + 1], FILE *f) {
 	for (int x = 0; x <= numberOfAwards; x++) {
 		fprintf(f, "%d ", array[x]);
+		printf("%d ", array[x]);
 	}
 	fprintf(f, "\n");
+	printf("\n");
 }
 
 void printALLAwards(int awards[populationSize][numberOfAwards + 1], FILE *f) {
