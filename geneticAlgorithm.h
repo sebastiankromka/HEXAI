@@ -77,50 +77,78 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 		return;
 	}
 	
-	char logPath[] = "geneticAlgorithm_n_N_d_D_o_O.log";
-	logPath[19] = nominator + '0';
-	logPath[23] = denominator + '0';
-	logPath[27] = frequencyOverwritingFromPopulation + '0';
-	FILE *f = fopen(logPath, "r");
-	if (f == NULL)
+	// LOG
+	char bestUnitsPath[] = "bestUnits.txt";
+	FILE *bestUnitsFile;
+	char defaultLogPath[] = "geneticAlgorithm_n_N_d_D_o_O.log";
+	defaultLogPath[19] = nominator + '0';
+	defaultLogPath[23] = denominator + '0';
+	defaultLogPath[27] = frequencyOverwritingFromPopulation + '0';
+	FILE *defaultLogFile = fopen(defaultLogPath, "r");
+	if (defaultLogFile != NULL)
 	{
 		printf("log file exists");
+		fclose(defaultLogFile);
 		return;
 	}
-	fclose(f);
-	f = fopen(logPath, "w");
+	defaultLogFile = fopen(defaultLogPath, "w");
 	srand(time(NULL));
 
-	// INITIALIZTION
-	// TODO load from file
+	// INITIALIZTION POPULATION
 	int population[populationSize][numberOfAwards + 1] = { 0 }; // + 1 for results
-	for (int p = 0; p < populationSize; p++) {
-		for (int a = 0; a < numberOfAwards; a++) {
-			population[p][a] = rand() % maxAwardValue;
+	char populationPath[] = "population.txt";
+	FILE *populationFile = fopen(populationPath, "r");
+	if (populationFile == NULL) {
+		for (int p = 0; p < populationSize; p++) {
+			for (int a = 0; a < numberOfAwards; a++) {
+				population[p][a] = rand() % maxAwardValue;
+			}
 		}
 	}
-	int rivals[rivalsSize][numberOfAwards + 1] = { 0 };
-	for (int r = 0; r < rivalsSize; r++) {
-		for (int a = 0; a < numberOfAwards; a++) {
-			rivals[r][a] = rand() % maxAwardValue;
+	else {
+		for (int p = 0; p < populationSize; p++) {
+			for (int a = 0; a < numberOfAwards; a++) {
+				fscanf(populationFile, "%d", &population[p][a]);
+			}
 		}
+		fclose(populationFile);
+	}
+
+	// INITIALIZTION RIVALS
+	int rivals[rivalsSize][numberOfAwards + 1] = { 0 };
+	char rivalsPath[] = "rivals.txt";
+	FILE *rivalsFile = fopen(rivalsPath, "r");
+	if (rivalsFile == NULL) {
+		for (int r = 0; r < rivalsSize; r++) {
+			for (int a = 0; a < numberOfAwards; a++) {
+				rivals[r][a] = rand() % maxAwardValue;
+			}
+		}
+	}
+	else {
+		for (int p = 0; p < populationSize; p++) {
+			for (int a = 0; a < numberOfAwards; a++) {
+				fscanf(rivalsFile, "%d", &rivals[p][a]);
+			}
+		}
+		fclose(rivalsFile);
 	}
 
 	// LOG
-	fprintf(f, "------------------------------------------------------\n\nstarting values\n\n");
-	printALLAwards(population, f);
-	fprintf(f, "\n");
+	fprintf(defaultLogFile, "------------------------------------------------------\n\nstarting values\n\n");
+	printALLAwards(population, defaultLogFile);
+	fprintf(defaultLogFile, "\n");
 	printf("\n");
-	printALLRivals(rivals, f);
-	fprintf(f, "\n");
+	printALLRivals(rivals, defaultLogFile);
+	fprintf(defaultLogFile, "\n");
 	printf("\n");
-	fclose(f);
+	fclose(defaultLogFile);
 
 	for (int generation = 1; generation <= numberOfGenerations; generation++) {
 
 		// LOG
-		f = fopen(logPath, "a");
-		fprintf(f, "------------------------------------------------------\n\ngeneration %d\n\n", generation);
+		defaultLogFile = fopen(defaultLogPath, "a");
+		fprintf(defaultLogFile, "------------------------------------------------------\n\ngeneration %d\n\n", generation);
 		printf("------------------------------------------------------\n\ngeneration %d\n\n", generation);
 
 		for (int r = 0; r < rivalsSize; r++) { // clean previous results
@@ -133,12 +161,12 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 
 			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
 
-				// GAME
+				// 1) GAME
 				int result = gameAI1vsAI2(population[p], rivals[r], AI1, 0); // plus result
 				result -= gameAI1vsAI2(rivals[r], population[p], AI1, 0); // minus rieval result 
 
 				// LOG
-				fprintf(f, "%d ", result);
+				fprintf(defaultLogFile, "%d ", result);
 				printf("%d ", result);
 
 				// UPDATE RESULTS
@@ -147,21 +175,22 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 			}
 
 			// LOG
-			fprintf(f, "\n");
+			fprintf(defaultLogFile, "\n");
 			printf("\n");
 
 		}
 
 		// LOG
-		fprintf(f, "\n");
+		fprintf(defaultLogFile, "\n");
 		printf("\n");
-		printALLAwards(population, f);
-		fprintf(f, "\n");
+		printALLAwards(population, defaultLogFile);
+		fprintf(defaultLogFile, "\n");
 		printf("\n");
-		printALLRivals(rivals, f);
-		fprintf(f, "\n");
+		printALLRivals(rivals, defaultLogFile);
+		fprintf(defaultLogFile, "\n");
 		printf("\n");
 
+		// 2) SELECTION
 		selection(population);
 
 		// UPDATE RIVALS
@@ -176,12 +205,27 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 			}
 		}
 
+		// SAVE BEST UNITS
+		bestUnitsFile = fopen(bestUnitsPath, "w");
+		saveBestUnits(population, bestUnitsFile);
+		fclose(bestUnitsFile);
+
+		// 3) CROSSOVER
 		crossover(population);
 
+		// 4) MUTATION
 		mutation(population);
 
+		// SAVE RESULTS TO FILE
+		populationFile = fopen(populationPath, "w");
+		rivalsFile = fopen(rivalsPath, "w");
+		saveResults(population, rivals, populationFile, rivalsFile);
+		fclose(populationFile);
+		fclose(rivalsFile);
+
 		// LOG
-		fclose(f);
+		fprintf(defaultLogFile, "results are saved\n");
+		fclose(defaultLogFile);
 	}
 }
 

@@ -83,4 +83,28 @@ void drawBoardToFile(int board[boardSize][boardSize], FILE *f) {
 	}
 }
 
+void saveResults(int population[populationSize][numberOfAwards + 1], int rivals[populationSize][numberOfAwards + 1], FILE *pf, FILE *rf) {
+	for (int p = 0; p < populationSize; p++) {
+		for (int a = 0; a < numberOfAwards; a++) {
+			fprintf(pf, "%d ", population[p][a]);
+		}
+		fprintf(pf, "\n");
+	}
+	for (int p = 0; p < rivalsSize; p++) {
+		for (int a = 0; a < numberOfAwards; a++) {
+			fprintf(rf, "%d ", rivals[p][a]);
+		}
+		fprintf(rf, "\n");
+	}
+}
+
+void saveBestUnits(int population[populationSize][numberOfAwards + 1], FILE *bf) {
+	for (int p = 0; p < populationSize / 2; p++) {
+		for (int a = 0; a <= numberOfAwards; a++) {
+			fprintf(bf, "%d ", population[p][a]);
+		}
+		fprintf(bf, "\n");
+	}
+}
+
 #endif
