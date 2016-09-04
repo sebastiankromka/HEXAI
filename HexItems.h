@@ -22,21 +22,6 @@ void addNewLevel(int *board[], int boardSize, int x, int depth, int items[maxDep
 	}
 }
 
-int getDisjointStepWaysNumber(int *board[], int boardSize, int x, int y) {
-	int number = 0;
-
-
-	return number;
-}
-
-void addDisjointStep(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]) {
-	// check ways
-
-	// if > 2 add and return
-
-	// if 1 then check neighbor
-}
-
 void addBridges(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]) {
 	// bridge A1
 	if (getNodeState(board, boardSize, x - 2, y + 1) == player1 && getNodeState(board, boardSize, x - 1, y) == freeNode && getNodeState(board, boardSize, x - 1, y + 1) == freeNode) {
@@ -74,7 +59,6 @@ void addBridges(int *board[], int boardSize, int x, int y, int depth, int items[
 
 void addItems(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]){
 	addBridges(board, boardSize, x, y, depth, items);
-	//addDisjointStep(board, boardSize, x, y, depth, items);
 	addNewLevel(board, boardSize, x, depth, items);
 }
 
