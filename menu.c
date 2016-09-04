@@ -11,15 +11,17 @@
 
 int main(int argc, char **argv) {
 	int **arrayOfPaths;
-	if (argc == 7) {
-		arrayOfPaths = allocate2D(20000, atoi(argv[5]) + 2);
-		geneticAlgorithm(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), arrayOfPaths, atoi(argv[6]));
+	if (argc == 8) {
+		arrayOfPaths = allocate2D(arrayOfPathsSize, atoi(argv[2]) + 2);
+		geneticAlgorithm(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), arrayOfPaths);
 	}
 	else {
-		int logLevel, firstPlayer, AIplayer, AIlevel1, AIlevel2, boardSize, numberOfGenerations, nominator, denominator, frequencyOverwritingFromPopulation, populationSize, rivalsSize;
-		int AI[3][numberOfPointsTypes] = { {1, 10, 10000, 100, 30, 10, 30, 10, 5, 5, 4, 4, 10},
-											{ 10, 200, 1000, 200, 30, 20, 30, 20, 10, 10, 8, 8, 10 },
-											{ 100, 200, 100, 200, 30, 20, 30, 20, 1000, 1000, 800, 800, 40 } };
+		int logLevel, firstPlayer, AIplayer, AIlevel1, AIlevel2, boardSize, numberOfGenerations, randomRivals, copyToRivals, frequencyCopyToRivals, populationSize, rivalsSize;
+		int AI[3][numberOfPointsTypes] = {
+		{ 1, 20, 999, 330, 131, 100, 131, 100, 9, 9, 5, 5, 13 },
+		{ 40, 300, 999, 130, 131, 100, 131, 100, 9, 9, 5, 5, 13 },
+		{ 1, 20, 999, 130, 131, 100, 131, 100, 9, 9, 5, 5, 13 }
+		};
 
 		printf("--------------------------------------------------\n");
 		printf("1 - Hex AI vs human\n");
@@ -33,7 +35,7 @@ int main(int argc, char **argv) {
 		if (option == 1) {
 			printf("boardSize (4, 5, 6, 7, 8): ");
 			scanf("%d", &boardSize);
-			arrayOfPaths = allocate2D(20000, boardSize + 2);
+			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
 			printf("AI level (1 - weak, 2 - mean, 3 - good): ");
 			scanf("%d", &AIlevel1);
 			printf("human player (1 - top-down, 2 - left-right): ");
@@ -44,38 +46,40 @@ int main(int argc, char **argv) {
 			firstPlayer = (firstPlayer + AIplayer) % 2 + 1;
 			printf("logLevel (1, 2, 3): ");
 			scanf("%d", &logLevel);
-			gameAIvsHuman(AIplayer, firstPlayer, logLevel, boardSize, arrayOfPaths, AI[AIlevel1]);
+			gameAIvsHuman(AIplayer, firstPlayer, logLevel, boardSize, arrayOfPaths, AI[AIlevel1 - 1]);
 		}
 		else if (option == 2) {
 			printf("boardSize (4, 5, 6, 7, 8): ");
 			scanf("%d", &boardSize);
-			arrayOfPaths = allocate2D(20000, boardSize + 2);
+			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
 			printf("AI1 level (1 - weak, 2 - mean, 3 - good): ");
 			scanf("%d", &AIlevel1);
 			printf("AI2 level (1 - weak, 2 - mean, 3 - good): ");
 			scanf("%d", &AIlevel2);
 			printf("logLevel (1, 2, 3): ");
 			scanf("%d", &logLevel);
-			gameAIvsAI(player1, logLevel, boardSize, arrayOfPaths, AI[AIlevel1], AI[AIlevel2]);
+			gameAIvsAI(player1, logLevel, boardSize, arrayOfPaths, AI[AIlevel1 - 1], AI[AIlevel2 - 1]);
 		}
 		else if (option == 3) {
-			printf("boardSize (4, 5, 6, 7, 8): ");
-			scanf("%d", &boardSize);
-			arrayOfPaths = allocate2D(20000, boardSize + 2);
 			printf("number of generations: ");
 			scanf("%d", &numberOfGenerations);
-			printf("nominator: ");
-			scanf("%d", &nominator);
-			printf("denominator: ");
-			scanf("%d", &denominator);
-			printf("frequency overwriting from population: ");
-			scanf("%d", &frequencyOverwritingFromPopulation);
+			printf("boardSize (4, 5, 6, 7, 8): ");
+			scanf("%d", &boardSize);
+			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
 			printf("size of population: ");
 			scanf("%d", &populationSize);
-			geneticAlgorithm(numberOfGenerations, nominator, denominator, frequencyOverwritingFromPopulation, boardSize, arrayOfPaths, populationSize);
+			printf("size of rivals: ");
+			scanf("%d", &rivalsSize);
+			printf("copy from population to rivals: ");
+			scanf("%d", &copyToRivals);
+			printf("frequency of copying from population to rivals: ");
+			scanf("%d", &frequencyCopyToRivals);
+			printf("random rivals: ");
+			scanf("%d", &randomRivals);
+			geneticAlgorithm(numberOfGenerations, boardSize, populationSize, rivalsSize, copyToRivals, frequencyCopyToRivals, randomRivals, arrayOfPaths);
 		}
 	}
-	deallocate2D(arrayOfPaths, 20000);
+	deallocate2D(arrayOfPaths, arrayOfPathsSize);
 	printf("\nPress enter to continue...\n");
 	getchar();
 	getchar();

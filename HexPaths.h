@@ -46,7 +46,7 @@ void changeStones(int *board[], int boardSize, int x, int y, int valueToChange, 
 int addPath(int *board[], int boardSize, int *arrayOfPaths[], int x, int y, int previousPath, int currentPath) {
 	
 	int i, myID = currentPath + 4, nextPath = currentPath + 1;
-	if (currentPath == 20000) {
+	if (currentPath == arrayOfPathsSize) {
 		printf("full longestPathBoard %d [%d][%d]\n", currentPath, x, y);
 		printBoard(board, boardSize);
 		exit(99); // works too long

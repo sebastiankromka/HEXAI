@@ -7,9 +7,11 @@
 #define player2 2
 #define noWinner 0
 
+#define arrayOfPathsSize 1000000
+
 #define maxDepth 4
 
-#define maxPointValue 100
+#define maxPointValue 1000
 
 #define numberOfPointsTypes 13
 #define stonesInBestChain 0

@@ -73,20 +73,18 @@ void addTheBestFromPopulationToRivals(int *population[], int *rivals[], int popu
 	overwriteArray(population[theBestFromPopulation], rivals[rivalNumber]);
 }
 
-void geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, int frequencyOverwritingFromPopulation, int boardSize, int *arrayOfPaths[], int populationSize) {
+void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize, int rivalsSize, int copyToRivals, int frequencyCopyToRivals, int randomRivals, int *arrayOfPaths[]) {
 
 	// basic validation
-	if (numberOfGenerations < 1 || nominator < 0 || denominator < 1 || frequencyOverwritingFromPopulation < 0) {
+	if (boardSize < 4 || boardSize > 8 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)) {
+		printf("check conditions: boardSize < 4 || boardSize > 6 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)");
 		return;
 	}
 
 	// LOG
 	char bestUnitsPath[] = "bestUnits.txt";
 	FILE *bestUnitsFile;
-	char defaultLogPath[] = "geneticAlgorithm_n_N_d_D_o_O.log";
-	defaultLogPath[19] = nominator + '0';
-	defaultLogPath[23] = denominator + '0';
-	defaultLogPath[27] = frequencyOverwritingFromPopulation + '0';
+	char defaultLogPath[] = "geneticAlgorithm.log";
 	FILE *defaultLogFile = fopen(defaultLogPath, "r");
 	if (defaultLogFile != NULL)
 	{
@@ -121,7 +119,6 @@ void geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, i
 	}
 
 	// INITIALIZTION RIVALS
-	int rivalsSize = populationSize;
 	int **rivals = allocate2D(rivalsSize, numberOfPointsTypes + 1);
 	char rivalsPath[] = "rivals.txt";
 	FILE *rivalsFile = fopen(rivalsPath, "r");
@@ -205,26 +202,26 @@ void geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, i
 		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// UPDATE RIVALS
-		if (nominator > 0) {
+		if (copyToRivals != 0 && generation % frequencyCopyToRivals == 0) {
+			printf("copy from population to rivals: ");
+			fprintf(defaultLogFile, "copy from population to rivals: ");
+			for (int p = 0; p < copyToRivals; p++) {
+				printf("%d ", p + 1);
+				fprintf(defaultLogFile, "%d ", p + 1);
+				overwriteArray(population[p], rivals[p]);
+			}
+			printf("\n\n");
+			fprintf(defaultLogFile, "\n\n");
+		}
+		if (randomRivals > 0) {
 			printf("randomize rivals: ");
 			fprintf(defaultLogFile, "randomize rivals: ");
-			for (int p = 0; p < (rivalsSize + 1) * nominator / denominator; p++) {
+			for (int p = copyToRivals; p < copyToRivals + randomRivals; p++) {
 				printf("%d ", p + 1);
 				fprintf(defaultLogFile, "%d ", p + 1);
 				for (int a = 0; a < numberOfPointsTypes; a++) {
 					rivals[p][a] = rand() % maxPointValue;
 				}
-			}
-			printf("\n\n");
-			fprintf(defaultLogFile, "\n\n");
-		}
-		if (frequencyOverwritingFromPopulation != 0 && generation % frequencyOverwritingFromPopulation == 0) {
-			printf("copy from population to rivals: ");
-			fprintf(defaultLogFile, "copy from population to rivals: ");
-			for (int p = (rivalsSize + 1) * nominator / denominator; p < rivalsSize; p++) {
-				printf("%d ", p + 1);
-				fprintf(defaultLogFile, "%d ", p + 1);
-				overwriteArray(population[p], rivals[p]);
 			}
 			printf("\n\n");
 			fprintf(defaultLogFile, "\n\n");
