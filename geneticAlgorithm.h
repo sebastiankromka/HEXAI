@@ -1,19 +1,19 @@
 #ifndef _GENETICALGORITHM_H_
 #define _GENETICALGORITHM_H_
 
-int selection(int population[populationSize][numberOfAwards + 1]) {
+void selection(int *population[], int populationSize) {
 	for (int belowIndex = populationSize / 2; belowIndex < populationSize; belowIndex++) {
 		for (int aboveIndex = 0; aboveIndex < populationSize / 2; aboveIndex++) {
-			if (population[belowIndex][numberOfAwards] > population[aboveIndex][numberOfAwards]) {
+			if (population[belowIndex][numberOfPointsTypes] > population[aboveIndex][numberOfPointsTypes]) {
 				swapArrays(population[belowIndex], population[aboveIndex]);
-				aboveIndex = 0;
+				aboveIndex = -1;
 			}
 		}
 	}
 }
 
-int crossover(int population[populationSize][numberOfAwards + 1]) {
-	int tempArrayOfArrays[populationSize / 2][numberOfAwards + 1];
+void crossover(int *population[], int populationSize) {
+	int **tempArrayOfArrays = allocate2D(populationSize / 2, numberOfPointsTypes + 1);
 	for (int test = 0; test < populationSize / 2; test++) {
 		overwriteArray(population[test], tempArrayOfArrays[test]);
 	}
@@ -22,28 +22,30 @@ int crossover(int population[populationSize][numberOfAwards + 1]) {
 		do {
 			parrent2 = rand() % (populationSize / 2);
 		} while (parrent1 == parrent2);
-		for (int award = 0; award < numberOfAwards; award++) {
+		for (int point = 0; point < numberOfPointsTypes; point++) {
 			if (rand() % 2 == 0) {
-				population[parrent1 + populationSize / 2][award] = tempArrayOfArrays[parrent1][award];
-				population[parrent1][award] = tempArrayOfArrays[parrent1][award];
+				population[parrent1 + populationSize / 2][point] = tempArrayOfArrays[parrent1][point];
+				population[parrent1][point] = tempArrayOfArrays[parrent1][point];
 			}
 			else {
-				population[parrent1 + populationSize / 2][award] = tempArrayOfArrays[parrent1][award];
-				population[parrent1][award] = tempArrayOfArrays[parrent2][award];
+				population[parrent1 + populationSize / 2][point] = tempArrayOfArrays[parrent1][point];
+				population[parrent1][point] = tempArrayOfArrays[parrent2][point];
 			}
+			population[parrent1 + populationSize / 2][numberOfPointsTypes] = population[parrent1][numberOfPointsTypes] = 0;
 		}
 	}
+	deallocate2D(tempArrayOfArrays, populationSize / 2);
 }
 
-int mutation(int population[populationSize][numberOfAwards + 1]) {
+void mutation(int *population[], int populationSize) {
 
 	for (int tested = 0; tested < populationSize; tested++) {
-		
+
 		for (int compared = tested + 1; compared < populationSize; compared++) {
 
 			int needMutation = 1;
 
-			for (int a = 0; a < numberOfAwards; a++) {
+			for (int a = 0; a < numberOfPointsTypes; a++) {
 				if (population[tested][a] != population[compared][a]) {
 					needMutation = 0;
 					break;
@@ -51,32 +53,33 @@ int mutation(int population[populationSize][numberOfAwards + 1]) {
 			}
 
 			if (needMutation == 1) {
-				int randomAward = rand() % numberOfAwards;
-				int randomValue = rand() % maxAwardValue;
+				int randomAward = rand() % numberOfPointsTypes;
+				int randomValue = rand() % maxPointValue;
 				population[tested][randomAward] = randomValue;
+				population[tested][numberOfPointsTypes] = randomAward + 1;
 				break;
 			}
 		}
 	}
 }
 
-void addTheBestFromPopulationToRivals(int population[populationSize][numberOfAwards + 1], int rivals[rivalsSize][numberOfAwards + 1], int rivalNumber) {
+void addTheBestFromPopulationToRivals(int *population[], int *rivals[], int populationSize, int rivalNumber) {
 	int theBestFromPopulation = 0;
 	for (int p = 1; p < populationSize; p++) {
-		if (population[p][numberOfAwards] > population[theBestFromPopulation][numberOfAwards]) {
+		if (population[p][numberOfPointsTypes] > population[theBestFromPopulation][numberOfPointsTypes]) {
 			theBestFromPopulation = p;
 		}
 	}
 	overwriteArray(population[theBestFromPopulation], rivals[rivalNumber]);
 }
 
-int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, int frequencyOverwritingFromPopulation) {
+void geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, int frequencyOverwritingFromPopulation, int boardSize, int *arrayOfPaths[], int populationSize) {
 
 	// basic validation
 	if (numberOfGenerations < 1 || nominator < 0 || denominator < 1 || frequencyOverwritingFromPopulation < 0) {
 		return;
 	}
-	
+
 	// LOG
 	char bestUnitsPath[] = "bestUnits.txt";
 	FILE *bestUnitsFile;
@@ -95,19 +98,22 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 	srand(time(NULL));
 
 	// INITIALIZTION POPULATION
-	int population[populationSize][numberOfAwards + 1] = { 0 }; // + 1 for results
+	int **population = allocate2D(populationSize, numberOfPointsTypes + 1); // + 1 for results
 	char populationPath[] = "population.txt";
 	FILE *populationFile = fopen(populationPath, "r");
+
+	// randomize if file not exists
 	if (populationFile == NULL) {
 		for (int p = 0; p < populationSize; p++) {
-			for (int a = 0; a < numberOfAwards; a++) {
-				population[p][a] = rand() % maxAwardValue;
+			for (int a = 0; a < numberOfPointsTypes; a++) {
+				population[p][a] = rand() % maxPointValue;
 			}
 		}
 	}
+	// load from file if exists
 	else {
 		for (int p = 0; p < populationSize; p++) {
-			for (int a = 0; a < numberOfAwards; a++) {
+			for (int a = 0; a < numberOfPointsTypes; a++) {
 				fscanf(populationFile, "%d", &population[p][a]);
 			}
 		}
@@ -115,19 +121,20 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 	}
 
 	// INITIALIZTION RIVALS
-	int rivals[rivalsSize][numberOfAwards + 1] = { 0 };
+	int rivalsSize = populationSize;
+	int **rivals = allocate2D(rivalsSize, numberOfPointsTypes + 1);
 	char rivalsPath[] = "rivals.txt";
 	FILE *rivalsFile = fopen(rivalsPath, "r");
 	if (rivalsFile == NULL) {
 		for (int r = 0; r < rivalsSize; r++) {
-			for (int a = 0; a < numberOfAwards; a++) {
-				rivals[r][a] = rand() % maxAwardValue;
+			for (int a = 0; a < numberOfPointsTypes; a++) {
+				rivals[r][a] = rand() % maxPointValue;
 			}
 		}
 	}
 	else {
 		for (int p = 0; p < populationSize; p++) {
-			for (int a = 0; a < numberOfAwards; a++) {
+			for (int a = 0; a < numberOfPointsTypes; a++) {
 				fscanf(rivalsFile, "%d", &rivals[p][a]);
 			}
 		}
@@ -135,43 +142,48 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 	}
 
 	// LOG
-	fprintf(defaultLogFile, "------------------------------------------------------\n\nstarting values\n\n");
-	printALLAwards(population, defaultLogFile);
-	fprintf(defaultLogFile, "\n");
-	printf("\n");
-	printALLRivals(rivals, defaultLogFile);
-	fprintf(defaultLogFile, "\n");
-	printf("\n");
+	fprintf(defaultLogFile, "------------------------------------------------------\n");
+	printf("------------------------------------------------------\n");
+	fprintf(defaultLogFile, "starting values\n\n");
+	printf("starting values\n\n");
+	fprintf(defaultLogFile, "population:\n");
+	printf("population:\n");
+	printPopulation(population, populationSize, numberOfPointsTypes, 0, defaultLogFile);
+	fprintf(defaultLogFile, "rivals:\n");
+	printf("rivals:\n");
+	printPopulation(rivals, rivalsSize, numberOfPointsTypes, 0, defaultLogFile);
 	fclose(defaultLogFile);
 
 	for (int generation = 1; generation <= numberOfGenerations; generation++) {
 
 		// LOG
 		defaultLogFile = fopen(defaultLogPath, "a");
-		fprintf(defaultLogFile, "------------------------------------------------------\n\ngeneration %d\n\n", generation);
-		printf("------------------------------------------------------\n\ngeneration %d\n\n", generation);
+		fprintf(defaultLogFile, "------------------------------------------------------\n");
+		fprintf(defaultLogFile, "generation %d\n\nresults\n", generation);
+		printf("--------------------------------------------------\n");
+		printf("generation %d\n\nresults\n", generation);
 
 		for (int r = 0; r < rivalsSize; r++) { // clean previous results
-			rivals[r][numberOfAwards] = 0;
+			rivals[r][numberOfPointsTypes] = 0;
 		}
 
 		for (int p = 0; p < populationSize; p++) {
 
-			population[p][numberOfAwards] = 0; // clean previous result
+			population[p][numberOfPointsTypes] = 0; // clean previous result
 
 			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
 
 				// 1) GAME
-				int result = gameAI1vsAI2(population[p], rivals[r], AI1, 0); // plus result
-				result -= gameAI1vsAI2(rivals[r], population[p], AI1, 0); // minus rieval result 
+				int result = gameAIvsAI(player1, 0, boardSize, arrayOfPaths, population[p], rivals[r]); // plus result
+				result -= gameAIvsAI(player1, 0, boardSize, arrayOfPaths, rivals[r], population[p]); // minus rieval result 
 
-				// LOG
+				 // LOG
 				fprintf(defaultLogFile, "%d ", result);
 				printf("%d ", result);
 
 				// UPDATE RESULTS
-				population[p][numberOfAwards] += result; // add result
-				rivals[r][numberOfAwards] -= result; // minus because it's rival
+				population[p][numberOfPointsTypes] += result; // add result
+				rivals[r][numberOfPointsTypes] -= result; // minus because it's rival
 			}
 
 			// LOG
@@ -181,52 +193,80 @@ int geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, in
 		}
 
 		// LOG
-		fprintf(defaultLogFile, "\n");
-		printf("\n");
-		printALLAwards(population, defaultLogFile);
-		fprintf(defaultLogFile, "\n");
-		printf("\n");
-		printALLRivals(rivals, defaultLogFile);
-		fprintf(defaultLogFile, "\n");
-		printf("\n");
+		fprintf(defaultLogFile, "\npopulation results\n");
+		printf("\npopulation results\n");
+		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
+		printf("\nrivals results\n");
+		printPopulation(rivals, rivalsSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// 2) SELECTION
-		selection(population);
+		selection(population, populationSize);
+
+		printf("after selection\n");
+		fprintf(defaultLogFile, "after selection\n");
+		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// UPDATE RIVALS
-		for (int p = 0; p < (rivalsSize + 1) * nominator / denominator; p++) { // random
-			for (int a = 0; a < numberOfAwards; a++) {
-				rivals[p][a] = rand() % maxAwardValue;
+		if (nominator > 0) {
+			printf("randomize rivals: ");
+			fprintf(defaultLogFile, "randomize rivals: ");
+			for (int p = 0; p < (rivalsSize + 1) * nominator / denominator; p++) {
+				printf("%d ", p + 1);
+				fprintf(defaultLogFile, "%d ", p + 1);
+				for (int a = 0; a < numberOfPointsTypes; a++) {
+					rivals[p][a] = rand() % maxPointValue;
+				}
 			}
+			printf("\n\n");
+			fprintf(defaultLogFile, "\n\n");
 		}
-		if (frequencyOverwritingFromPopulation != 0 && generation % frequencyOverwritingFromPopulation == 0) { // from poluation
+		if (frequencyOverwritingFromPopulation != 0 && generation % frequencyOverwritingFromPopulation == 0) {
+			printf("copy from population to rivals: ");
+			fprintf(defaultLogFile, "copy from population to rivals: ");
 			for (int p = (rivalsSize + 1) * nominator / denominator; p < rivalsSize; p++) {
+				printf("%d ", p + 1);
+				fprintf(defaultLogFile, "%d ", p + 1);
 				overwriteArray(population[p], rivals[p]);
 			}
+			printf("\n\n");
+			fprintf(defaultLogFile, "\n\n");
 		}
 
 		// SAVE BEST UNITS
 		bestUnitsFile = fopen(bestUnitsPath, "w");
-		saveBestUnits(population, bestUnitsFile);
+		saveBestUnits(population, populationSize, bestUnitsFile);
 		fclose(bestUnitsFile);
 
 		// 3) CROSSOVER
-		crossover(population);
+		crossover(population, populationSize);
+
+		printf("after crossover\n");
+		fprintf(defaultLogFile, "after crossover\n");
+		printPopulation(population, populationSize, numberOfPointsTypes, 0, defaultLogFile);
 
 		// 4) MUTATION
-		mutation(population);
+		mutation(population, populationSize);
+
+		printf("after mutation\n");
+		fprintf(defaultLogFile, "after mutation\n");
+		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// SAVE RESULTS TO FILE
 		populationFile = fopen(populationPath, "w");
 		rivalsFile = fopen(rivalsPath, "w");
-		saveResults(population, rivals, populationFile, rivalsFile);
+		saveResults(population, rivals, populationSize, rivalsSize, populationFile, rivalsFile);
 		fclose(populationFile);
 		fclose(rivalsFile);
 
 		// LOG
-		fprintf(defaultLogFile, "results are saved\n");
+		printf("rivals\n");
+		fprintf(defaultLogFile, "rivals\n");
+		printPopulation(rivals, rivalsSize, numberOfPointsTypes, 0, defaultLogFile);
 		fclose(defaultLogFile);
 	}
+
+	deallocate2D(population, populationSize);
+	deallocate2D(rivals, rivalsSize);
 }
 
 #endif
