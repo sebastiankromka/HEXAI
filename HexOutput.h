@@ -76,7 +76,7 @@ void saveResults(int *population[], int *rivals[], int populationSize, int rival
 
 void saveBestUnits(int *population[], int populationSize, FILE *bf) {
 	for (int p = 0; p < populationSize / 2; p++) {
-		for (int a = 0; a <= numberOfPointsTypes; a++) {
+		for (int a = 0; a < numberOfPointsTypes; a++) {
 			fprintf(bf, "%d ", population[p][a]);
 		}
 		fprintf(bf, "\n");

@@ -47,6 +47,9 @@ int main(int argc, char **argv) {
 			printf("logLevel (1, 2, 3): ");
 			scanf("%d", &logLevel);
 			gameAIvsHuman(AIplayer, firstPlayer, logLevel, boardSize, arrayOfPaths, AI[AIlevel1 - 1]);
+			printf("\nPress enter to continue...\n");
+			getchar();
+			getchar();
 		}
 		else if (option == 2) {
 			printf("boardSize (4, 5, 6, 7, 8): ");
@@ -59,6 +62,9 @@ int main(int argc, char **argv) {
 			printf("logLevel (1, 2, 3): ");
 			scanf("%d", &logLevel);
 			gameAIvsAI(player1, logLevel, boardSize, arrayOfPaths, AI[AIlevel1 - 1], AI[AIlevel2 - 1]);
+			printf("\nPress enter to continue...\n");
+			getchar();
+			getchar();
 		}
 		else if (option == 3) {
 			printf("number of generations: ");
@@ -78,10 +84,11 @@ int main(int argc, char **argv) {
 			scanf("%d", &randomRivals);
 			geneticAlgorithm(numberOfGenerations, boardSize, populationSize, rivalsSize, copyToRivals, frequencyCopyToRivals, randomRivals, arrayOfPaths);
 		}
+		else if (option == 4) {
+			arrayOfPaths = allocate2D(arrayOfPathsSize, 5 + 2);
+			geneticAlgorithm(5, 5, 6, 6, 1, 2, 1, arrayOfPaths);
+		}
 	}
 	deallocate2D(arrayOfPaths, arrayOfPathsSize);
-	printf("\nPress enter to continue...\n");
-	getchar();
-	getchar();
 	return 0;
 }
