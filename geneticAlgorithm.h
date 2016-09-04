@@ -196,8 +196,6 @@ void geneticAlgorithm(int numberOfGenerations, int nominator, int denominator, i
 		fprintf(defaultLogFile, "\npopulation results\n");
 		printf("\npopulation results\n");
 		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
-		printf("\nrivals results\n");
-		printPopulation(rivals, rivalsSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// 2) SELECTION
 		selection(population, populationSize);

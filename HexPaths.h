@@ -1,8 +1,6 @@
 #ifndef _HEXPATHS_H_
 #define _HEXPATHS_H_
 
-static int testmax = 0;
-
 void changeStones(int *board[], int boardSize, int x, int y, int valueToChange, int newValue) {
 
 	// stones map
@@ -48,8 +46,7 @@ void changeStones(int *board[], int boardSize, int x, int y, int valueToChange, 
 int addPath(int *board[], int boardSize, int *arrayOfPaths[], int x, int y, int previousPath, int currentPath) {
 	
 	int i, myID = currentPath + 4, nextPath = currentPath + 1;
-	if (currentPath > testmax) { testmax = currentPath; printf("%d\n", testmax); }
-	if (currentPath == 100000) {
+	if (currentPath == 20000) {
 		printf("full longestPathBoard %d [%d][%d]\n", currentPath, x, y);
 		printBoard(board, boardSize);
 		exit(99); // works too long
@@ -67,7 +64,6 @@ int addPath(int *board[], int boardSize, int *arrayOfPaths[], int x, int y, int 
 		}
 	}
 
-
 	if (arrayOfPaths[currentPath][x] == 0) {
 
 		// SET CURRENT LEVEL
@@ -79,15 +75,6 @@ int addPath(int *board[], int boardSize, int *arrayOfPaths[], int x, int y, int 
 
 	// ADD NUMBER OF STONES
 	arrayOfPaths[currentPath][boardSize]++;
-
-	/*printf("set\n");
-	for (int d = 0; d < 18; d++) {
-		for (i = 0; i < boardSize + 2; i++) {
-			printf("%d, ", arrayOfPaths[d][i]);
-		}
-		printf("\n");
-	}
-	printf("\n");*/
 
 	// RETURN -1 IF HAVE STONES IN ALL LEVELS IN ONE PATH
 	if (arrayOfPaths[currentPath][boardSize + 1] == boardSize) {
@@ -157,7 +144,6 @@ int checkPartialState(int *board[], int boardSize, int *arrayOfPaths[], int dept
 
 	// add best path to items
 	for (c = 0; c < currentPath; c++) {
-		//printf("ap %d %d\n", arrayOfPaths[c][boardSize], arrayOfPaths[c][boardSize + 1]);
 		if (arrayOfPaths[c][boardSize + 1] * points[levelsInBestChain] - arrayOfPaths[c][boardSize] * points[stonesInBestChain] > items[depth][levelsInBestChain] * points[levelsInBestChain] - items[depth][stonesInBestChain] * points[stonesInBestChain]) {
 			items[depth][levelsInBestChain] = arrayOfPaths[c][boardSize + 1];
 			items[depth][stonesInBestChain] = arrayOfPaths[c][boardSize];
