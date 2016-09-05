@@ -25,35 +25,35 @@ void addNewLevel(int *board[], int boardSize, int x, int depth, int items[maxDep
 void addBridges(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]) {
 	// bridge A1
 	if (getNodeState(board, boardSize, x - 2, y + 1) == player1 && getNodeState(board, boardSize, x - 1, y) == freeNode && getNodeState(board, boardSize, x - 1, y + 1) == freeNode) {
-		items[depth][bridgeA1] = 1;
+		items[depth][bridgeA] = 1;
 	}
 	// bridge A1 wall
 	if (x == 1 && getNodeState(board, boardSize, 0, y) == freeNode && getNodeState(board, boardSize, 0, y + 1) == freeNode) {
-		items[depth][bridgeA1wall] = 1;
+		items[depth][bridgeAwall] = 1;
 	}
 	// bridge A2
 	if (getNodeState(board, boardSize, x + 2, y - 1) == player1 && getNodeState(board, boardSize, x + 1, y) == freeNode && getNodeState(board, boardSize, x + 1, y - 1) == freeNode) {
-		items[depth][bridgeA2] = 1;
+		items[depth][bridgeA] = 1;
 	}
 	// bridge A2 wall
 	if (x == boardSize - 2 && getNodeState(board, boardSize, boardSize - 1, y - 1) == freeNode && getNodeState(board, boardSize, boardSize - 1, y) == freeNode) {
-		items[depth][bridgeA2wall] = 1;
+		items[depth][bridgeAwall] = 1;
 	}
 	// bridge B1
 	if (getNodeState(board, boardSize, x - 1, y + 2) == player1 && getNodeState(board, boardSize, x - 1, y + 1) == freeNode && getNodeState(board, boardSize, x, y + 1) == freeNode) {
-		items[depth][bridgeB1] = 1;
+		items[depth][bridgeB] = 1;
 	}
 	// bridge B2
 	if (getNodeState(board, boardSize, x + 1, y - 2) == player1 && getNodeState(board, boardSize, x, y - 1) == freeNode && getNodeState(board, boardSize, x + 1, y - 1) == freeNode) {
-		items[depth][bridgeB2] = 1;
+		items[depth][bridgeB] = 1;
 	}
 	// bridge C1
 	if (getNodeState(board, boardSize, x + 1, y + 1) == player1 && getNodeState(board, boardSize, x, y + 1) == freeNode && getNodeState(board, boardSize, x + 1, y) == freeNode) {
-		items[depth][bridgeC1] = 1;
+		items[depth][bridgeC] = 1;
 	}
 	// bridge C2
 	if (getNodeState(board, boardSize, x - 1, y - 1) == player1 && getNodeState(board, boardSize, x, y - 1) == freeNode && getNodeState(board, boardSize, x - 1, y) == freeNode) {
-		items[depth][bridgeC2] = 1;
+		items[depth][bridgeC] = 1;
 	}
 }
 
@@ -65,8 +65,11 @@ void addItems(int *board[], int boardSize, int x, int y, int depth, int items[ma
 int getScore(int items[maxDepth][numberOfItemsTypes], int points[numberOfPointsTypes]) {
 	int score = 0, tmpScore, d, i;
 	for (d = 0; d < maxDepth && items[d][stonesInBestChain] > 0; d++) {
-		tmpScore = -items[d][stonesInBestChain] * points[stonesInBestChain];
-		for (i = 1; i < numberOfItemsTypes - 2; i++) { // 1 stonesInBestChain // -2 xPosition, yPosition)
+		tmpScore = items[d][levelsInBestChain] * points[levelsInBestChain] - items[d][stonesInBestChain] * points[stonesInBestChain];
+		if (tmpScore < 0) {
+			tmpScore = 0;
+		}
+		for (i = 2; i < numberOfItemsTypes - 2; i++) { // 0 stonesInBestChain 1 levelsInBestChain // -2 xPosition, yPosition)
 			tmpScore += items[d][i] * points[i];
 		}
 		tmpScore = tmpScore * (100 - points[lossOfPointsForDepthInPercent] * d) / 100;

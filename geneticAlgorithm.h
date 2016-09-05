@@ -55,7 +55,18 @@ void mutation(int *population[], int populationSize, FILE *f, FILE *f2) {
 			if (needMutation == 1) {
 				tmp++;
 				int randomPoint = rand() % numberOfPointsTypes;
-				int randomValue = rand() % maxPointValue;
+				int randomValue;
+
+				if (randomPoint == stonesInBestChain) {
+					randomValue = rand() % maxPointValueStonesInBestChain;
+				}
+				else if (randomPoint == lossOfPointsForDepthInPercent) {
+					randomValue = rand() % maxPointValueLossOfPointsForDepthInPercent;
+				}
+				else {
+					randomValue = rand() % maxPointValue;
+				}
+
 				population[tested][randomPoint] = randomValue;
 
 				fprintf(f, "mutation: genotype %d, gene %d\n", tested + 1, randomPoint + 1);
@@ -92,11 +103,21 @@ void addTheBestFromPopulationToRivals(int *population[], int *rivals[], int popu
 	overwriteArray(population[theBestFromPopulation], rivals[rivalNumber]);
 }
 
-void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize, int rivalsSize, int copyToRivals, int frequencyCopyToRivals, int randomRivals, int *arrayOfPaths[]) {
+void randomizeRivalsOrder(int *rivalsOrder, int rivalsSize) {
+	int tmp1, tmp2;
+	for (int r = 0; r < rivalsSize; r++) {
+		tmp1 = rivalsOrder[r];
+		tmp2 = rand() % rivalsSize;
+		rivalsOrder[r] = rivalsOrder[tmp2];
+		rivalsOrder[tmp2] = tmp1;
+	}
+}
+
+void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGeneration, int populationSize, int rivalsSize, int copyToRivals, int frequencyCopyToRivals, int randomRivals, int *arrayOfPaths[]) {
 
 	// basic validation
-	if (boardSize < 4 || boardSize > 8 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)) {
-		printf("check conditions: boardSize < 4 || boardSize > 6 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)");
+	if (boardSize < 4 || boardSize > 8 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0 || rivalsSize < populationSize)) {
+		printf("check conditions: boardSize < 4 || boardSize > 6 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0) || rivalsSize < populationSize");
 		return;
 	}
 
@@ -126,9 +147,11 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 	FILE *populationFile = fopen(populationPath, "r");
 	// randomize
 	for (int p = 0; p < populationSize; p++) {
-		for (int a = 0; a < numberOfPointsTypes; a++) {
+		population[p][stonesInBestChain] = rand() % maxPointValueStonesInBestChain;
+		for (int a = 1; a < numberOfPointsTypes - 1; a++) {
 			population[p][a] = rand() % maxPointValue;
 		}
+		population[p][lossOfPointsForDepthInPercent] = rand() % maxPointValueLossOfPointsForDepthInPercent;
 	}
 	// load from file if exists
 	if (populationFile != NULL) {
@@ -145,9 +168,11 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 	char rivalsPath[] = "rivals.txt";
 	FILE *rivalsFile = fopen(rivalsPath, "r");
 	for (int r = 0; r < rivalsSize; r++) {
-		for (int a = 0; a < numberOfPointsTypes; a++) {
+		rivals[r][stonesInBestChain] = rand() % maxPointValueStonesInBestChain;
+		for (int a = 1; a < numberOfPointsTypes - 1; a++) {
 			rivals[r][a] = rand() % maxPointValue;
 		}
+		rivals[r][lossOfPointsForDepthInPercent] = rand() % maxPointValueLossOfPointsForDepthInPercent;
 	}
 	if (rivalsFile != NULL) {
 		for (int p = 0; p < rivalsSize; p++) {
@@ -156,6 +181,10 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 			}
 		}
 		fclose(rivalsFile);
+	}
+	int *rivalsOrder = malloc(rivalsSize * sizeof(int));
+	for (int r = 0; r < rivalsSize; r++) {
+		rivalsOrder[r] = r;
 	}
 
 	// LOG
@@ -184,21 +213,22 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 			rivals[r][numberOfPointsTypes] = 0;
 		}
 		resultsSum = 0;
+		randomizeRivalsOrder(rivalsOrder, rivalsSize);
 
 		for (int p = 0; p < populationSize; p++) {
 
 			population[p][numberOfPointsTypes] = 0; // clean previous result
 
-			for (int r = 0; r < rivalsSize; r++) { // play with all rivals
+			for (int r = 0; r < gamesInOneGeneration; r++) {
 
 				// 1) GAME
-				int result = gameAIvsAI(player1, 0, boardSize, arrayOfPaths, population[p], rivals[r]); // plus result
-				result -= gameAIvsAI(player1, 0, boardSize, arrayOfPaths, rivals[r], population[p]); // minus rieval result 
+				int result = gameAIvsAI(player1, 0, boardSize, arrayOfPaths, population[p], rivals[rivalsOrder[r]]); // plus result
+				result -= gameAIvsAI(player1, 0, boardSize, arrayOfPaths, rivals[rivalsOrder[r]], population[p]); // minus rieval result 
 				resultsSum += result;
 
 				 // LOG
-				fprintf(defaultLogFile, "%d ", result);
-				printf("%d ", result);
+				fprintf(defaultLogFile, "p%d vs r%d %d, ", p + 1, rivalsOrder[r] + 1, result);
+				printf("p%d vs r%d %d, ", p + 1, rivalsOrder[r] + 1, result);
 
 				// UPDATE RESULTS
 				population[p][numberOfPointsTypes] += result; // add result
@@ -265,9 +295,11 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 			for (int p = copyToRivals; p < copyToRivals + randomRivals; p++) {
 				printf("%d ", p + 1);
 				fprintf(defaultLogFile, "%d ", p + 1);
-				for (int a = 0; a < numberOfPointsTypes; a++) {
+				rivals[p][stonesInBestChain] = rand() % maxPointValueStonesInBestChain;
+				for (int a = 1; a < numberOfPointsTypes - 1; a++) {
 					rivals[p][a] = rand() % maxPointValue;
 				}
+				rivals[p][lossOfPointsForDepthInPercent] = rand() % maxPointValueLossOfPointsForDepthInPercent;
 			}
 			printf("\n\n");
 			fprintf(defaultLogFile, "\n\n");
@@ -283,6 +315,7 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int populationSize
 
 	deallocate2D(population, populationSize);
 	deallocate2D(rivals, rivalsSize);
+	free(rivalsOrder);
 }
 
 #endif

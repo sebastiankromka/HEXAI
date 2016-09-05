@@ -11,39 +11,33 @@
 
 #define maxDepth 4
 
-#define maxPointValue 1000
+#define maxPointValue 100
+#define maxPointValueStonesInBestChain 40
+#define maxPointValueLossOfPointsForDepthInPercent 25
 
-#define numberOfPointsTypes 13
+#define numberOfPointsTypes 9
 #define stonesInBestChain 0
 #define levelsInBestChain 1
 #define win 2
 #define newLevel 3
-#define bridgeA1 4
-#define bridgeA1wall 5
-#define bridgeA2 6
-#define bridgeA2wall 7
-#define bridgeB1 8
-#define bridgeB2 9
-#define bridgeC1 10
-#define bridgeC2 11
-#define lossOfPointsForDepthInPercent 12
+#define bridgeA 4
+#define bridgeAwall 5
+#define bridgeB 6
+#define bridgeC 7
+#define lossOfPointsForDepthInPercent 8
 
-#define numberOfItemsTypes 14
+#define numberOfItemsTypes 10
 char *namesOfItems[numberOfItemsTypes - 2] = {
 	"stonesInBestChain",
 	"levelsInBestChain",
 	"win",
 	"newLevel",
-	"bridgeA1",
-	"bridgeA1wall",
-	"bridgeA2",
-	"bridgeA2wall",
-	"bridgeB1",
-	"bridgeB2",
-	"bridgeC1",
-	"bridgeC2"
+	"bridgeA",
+	"bridgeAwall",
+	"bridgeB",
+	"bridgeC",
 };
-#define xPosition 12
-#define yPosition 13
+#define xPosition 8
+#define yPosition 9
 
 #endif

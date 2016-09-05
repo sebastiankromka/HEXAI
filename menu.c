@@ -11,16 +11,16 @@
 
 int main(int argc, char **argv) {
 	int **arrayOfPaths;
-	if (argc == 8) {
+	if (argc == 9) {
 		arrayOfPaths = allocate2D(arrayOfPathsSize, atoi(argv[2]) + 2);
-		geneticAlgorithm(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), arrayOfPaths);
+		geneticAlgorithm(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]), arrayOfPaths);
 	}
 	else {
-		int logLevel, firstPlayer, AIplayer, AIlevel1, AIlevel2, boardSize, numberOfGenerations, randomRivals, copyToRivals, frequencyCopyToRivals, populationSize, rivalsSize;
+		int logLevel, firstPlayer, AIplayer, AIlevel1, AIlevel2, boardSize, numberOfGenerations, randomRivals, copyToRivals, frequencyCopyToRivals, populationSize, rivalsSize, gamesInOneGeneration;
 		int AI[3][numberOfPointsTypes] = {
-		{ 1, 20, 999, 330, 131, 100, 131, 100, 9, 9, 5, 5, 13 },
-		{ 40, 300, 999, 130, 131, 100, 131, 100, 9, 9, 5, 5, 13 },
-		{ 1, 20, 999, 130, 131, 100, 131, 100, 9, 9, 5, 5, 13 }
+		{ 13, 65, 99, 80, 40, 45, 55, 63, 20 },
+		{ 3, 35, 99, 20, 20, 15, 15, 13, 20 },
+		{ 3, 15, 99, 20, 30, 25, 5, 3, 10 }
 		};
 
 		printf("--------------------------------------------------\n");
@@ -69,6 +69,8 @@ int main(int argc, char **argv) {
 		else if (option == 3) {
 			printf("number of generations: ");
 			scanf("%d", &numberOfGenerations);
+			printf("games in one generation: ");
+			scanf("%d", &gamesInOneGeneration);
 			printf("boardSize (4, 5, 6, 7, 8): ");
 			scanf("%d", &boardSize);
 			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
@@ -82,11 +84,11 @@ int main(int argc, char **argv) {
 			scanf("%d", &frequencyCopyToRivals);
 			printf("random rivals: ");
 			scanf("%d", &randomRivals);
-			geneticAlgorithm(numberOfGenerations, boardSize, populationSize, rivalsSize, copyToRivals, frequencyCopyToRivals, randomRivals, arrayOfPaths);
+			geneticAlgorithm(numberOfGenerations, boardSize, gamesInOneGeneration, populationSize, rivalsSize, copyToRivals, frequencyCopyToRivals, randomRivals, arrayOfPaths);
 		}
 		else if (option == 4) {
 			arrayOfPaths = allocate2D(arrayOfPathsSize, 5 + 2);
-			geneticAlgorithm(5, 5, 6, 6, 1, 2, 1, arrayOfPaths);
+			geneticAlgorithm(5, 5, 5, 10, 15, 1, 2, 1, arrayOfPaths);
 		}
 	}
 	deallocate2D(arrayOfPaths, arrayOfPathsSize);
