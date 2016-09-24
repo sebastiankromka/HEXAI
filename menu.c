@@ -17,10 +17,12 @@ int main(int argc, char **argv) {
 	}
 	else {
 		int logLevel, firstPlayer, AIplayer, AIlevel1, AIlevel2, boardSize, numberOfGenerations, randomRivals, copyToRivals, frequencyCopyToRivals, populationSize, rivalsSize, gamesInOneGeneration;
-		int AI[3][numberOfPointsTypes] = {
-		{ 13, 65, 99, 80, 40, 45, 55, 63, 20 },
-		{ 3, 35, 99, 20, 20, 15, 15, 13, 20 },
-		{ 3, 15, 99, 20, 30, 25, 5, 3, 10 }
+		int AI[5][numberOfPointsTypes] = {
+		{ 33, 45, 99, 80, 40, 45, 85, 83, 1 },
+		{ 3, 35, 99, 10, 20, 15, 15, 13, 20 },
+		{ 27, 47, 99, 34, 87, 35, 1, 2, 11 },
+		{ 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+		{ 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 		};
 
 		printf("--------------------------------------------------\n");
@@ -36,8 +38,14 @@ int main(int argc, char **argv) {
 			printf("boardSize (4, 5, 6, 7, 8): ");
 			scanf("%d", &boardSize);
 			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
-			printf("AI level (1 - weak, 2 - mean, 3 - good): ");
+			printf("AI level (1 - weak, 2 - mean, 3 - good, 4 - custom): ");
 			scanf("%d", &AIlevel1);
+			if (AIlevel1 == 4) {
+				for (int i = 0; i < numberOfPointsTypes; i++) {
+					printf("%d = ", i);
+					scanf("%d", &AI[3][i]);
+				}
+			}
 			printf("human player (1 - top-down, 2 - left-right): ");
 			scanf("%d", &AIplayer);
 			AIplayer = AIplayer % 2 + 1;
@@ -55,10 +63,23 @@ int main(int argc, char **argv) {
 			printf("boardSize (4, 5, 6, 7, 8): ");
 			scanf("%d", &boardSize);
 			arrayOfPaths = allocate2D(arrayOfPathsSize, boardSize + 2);
-			printf("AI1 level (1 - weak, 2 - mean, 3 - good): ");
+			printf("AI1 level (1 - weak, 2 - mean, 3 - good, 4 - custom): ");
 			scanf("%d", &AIlevel1);
-			printf("AI2 level (1 - weak, 2 - mean, 3 - good): ");
+			if (AIlevel1 == 4) {
+				for (int i = 0; i < numberOfPointsTypes; i++) {
+					printf("%d = ", i);
+					scanf("%d", &AI[3][i]);
+				}
+			}
+			printf("AI2 level (1 - weak, 2 - mean, 3 - good, 4 - custom): ");
 			scanf("%d", &AIlevel2);
+			if (AIlevel2 == 4) {
+				AIlevel2 = 5;
+				for (int i = 0; i < numberOfPointsTypes; i++) {
+					printf("%d = ", i);
+					scanf("%d", &AI[4][i]);
+				}
+			}
 			printf("logLevel (1, 2, 3): ");
 			scanf("%d", &logLevel);
 			gameAIvsAI(player1, logLevel, boardSize, arrayOfPaths, AI[AIlevel1 - 1], AI[AIlevel2 - 1]);
