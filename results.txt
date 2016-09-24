@@ -1,0 +1,1 @@
+board size: 4, population size: 10, rivals size: 10, copy to rivals: 1, frequency of copying to rivals: 1, random rivals: 1
