@@ -116,8 +116,8 @@ void randomizeRivalsOrder(int *rivalsOrder, int rivalsSize) {
 void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGeneration, int populationSize, int rivalsSize, int copyToRivals, int frequencyCopyToRivals, int randomRivals, int *arrayOfPaths[]) {
 
 	// basic validation
-	if (boardSize < 4 || boardSize > 8 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0 || rivalsSize < populationSize)) {
-		printf("check conditions: boardSize < 4 || boardSize > 6 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0) || rivalsSize < populationSize");
+	if (boardSize < 4 || boardSize > 8 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)) {
+		printf("check conditions: boardSize < 4 || boardSize > 6 || copyToRivals > populationSize || copyToRivals + randomRivals > rivalsSize || (copyToRivals != 0 && frequencyCopyToRivals == 0) || (copyToRivals == 0 && frequencyCopyToRivals != 0)");
 		return;
 	}
 
