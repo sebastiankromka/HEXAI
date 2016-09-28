@@ -2,38 +2,49 @@
 #define _GENETICALGORITHM_H_
 
 void selection(int *population[], int populationSize) {
-	for (int belowIndex = populationSize / 2; belowIndex < populationSize; belowIndex++) {
-		for (int aboveIndex = 0; aboveIndex < populationSize / 2; aboveIndex++) {
-			if (population[belowIndex][numberOfPointsTypes] > population[aboveIndex][numberOfPointsTypes]) {
-				swapArrays(population[belowIndex], population[aboveIndex]);
-				aboveIndex = -1;
-			}
+	int **tempArrayOfArrays = allocate2D(populationSize, numberOfPointsTypes + 1);
+	int bestUnit = 0;
+	int unit1, unit2;
+	for (int i = 0; i < populationSize; i++) {
+		overwriteArray(population[i], tempArrayOfArrays[i]);
+	}
+	for (int i = 1; i < populationSize; i++) {
+		if (population[i][numberOfPointsTypes] > population[bestUnit][numberOfPointsTypes]) {
+			bestUnit = i;
 		}
 	}
+	// first is the best unit
+	overwriteArray(population[bestUnit], population[0]);
+	for (int i = 1; i < populationSize; i++) {
+		unit1 = rand() % populationSize;
+		do {
+			unit2 = rand() % populationSize;
+		} while (unit1 == unit2);
+		if (tempArrayOfArrays[unit1][numberOfPointsTypes] > tempArrayOfArrays[unit2][numberOfPointsTypes]) {
+			overwriteArray(tempArrayOfArrays[unit1], population[i]);
+		}
+		else {
+			overwriteArray(tempArrayOfArrays[unit2], population[i]);
+		}
+	}
+	deallocate2D(tempArrayOfArrays, populationSize);
 }
 
 void crossover(int *population[], int populationSize) {
-	int **tempArrayOfArrays = allocate2D(populationSize / 2, numberOfPointsTypes + 1);
-	for (int test = 0; test < populationSize / 2; test++) {
-		overwriteArray(population[test], tempArrayOfArrays[test]);
+	int **tempArrayOfArrays = allocate2D(populationSize, numberOfPointsTypes + 1);
+	int k, tmp;
+	for (int i = 1; i < populationSize; i++) {
+		swapArrays(population[i], population[(rand() % (populationSize - 1)) + 1]);
 	}
-	int parrent2;
-	for (int parrent1 = 0; parrent1 < populationSize / 2; parrent1++) {
-		do {
-			parrent2 = rand() % (populationSize / 2);
-		} while (parrent1 == parrent2);
-		for (int point = 0; point < numberOfPointsTypes; point++) {
-			if (rand() % 2 == 0) {
-				population[parrent1 + populationSize / 2][point] = tempArrayOfArrays[parrent1][point];
-				population[parrent1][point] = tempArrayOfArrays[parrent1][point];
-			}
-			else {
-				population[parrent1 + populationSize / 2][point] = tempArrayOfArrays[parrent1][point];
-				population[parrent1][point] = tempArrayOfArrays[parrent2][point];
-			}
+	for (int i = 1; i < populationSize - 1; i = i + 2) {
+		k = (rand() % (numberOfPointsTypes - 2)) + 1;
+		for (int j = k; j < numberOfPointsTypes; j++) {
+			tmp = population[i][j];
+			population[i][j] = population[i + 1][j];
+			population[i + 1][j] = tmp;
 		}
 	}
-	deallocate2D(tempArrayOfArrays, populationSize / 2);
+	deallocate2D(tempArrayOfArrays, populationSize);
 }
 
 void mutation(int *population[], int populationSize, FILE *f, FILE *f2) {
@@ -251,7 +262,7 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGene
 		printf("selection\n");
 		fprintf(defaultLogFile, "selection\n");
 		selection(population, populationSize);
-		printPopulation(population, populationSize / 2, numberOfPointsTypes + 1, 1, defaultLogFile);
+		printPopulation(population, populationSize, numberOfPointsTypes + 1, 1, defaultLogFile);
 
 		// UPDATE RIVALS
 		if (copyToRivals != 0 && generation % frequencyCopyToRivals == 0) {
@@ -266,11 +277,6 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGene
 			printf("\n\n");
 			fprintf(defaultLogFile, "\n\n");
 		}
-
-		// SAVE BEST UNITS
-		bestUnitsFile = fopen(bestUnitsPath, "w");
-		saveBestUnits(population, populationSize, bestUnitsFile);
-		fclose(bestUnitsFile);
 
 		// 3) CROSSOVER
 		printf("crossover\n");
