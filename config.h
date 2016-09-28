@@ -14,8 +14,9 @@
 #define maxPointValue 100
 #define maxPointValueStonesInBestChain 40
 #define maxPointValueLossOfPointsForDepthInPercent 25
+#define minPointValueLossOfPointsForDepthInPercent -25
 
-#define numberOfPointsTypes 9
+#define numberOfPointsTypes 10
 #define stonesInBestChain 0
 #define levelsInBestChain 1
 #define win 2
@@ -24,9 +25,10 @@
 #define bridgeAwall 5
 #define bridgeB 6
 #define bridgeC 7
-#define lossOfPointsForDepthInPercent 8
+#define disjointStep 8
+#define lossOfPointsForDepthInPercent 9
 
-#define numberOfItemsTypes 10
+#define numberOfItemsTypes 11
 char *namesOfItems[numberOfItemsTypes - 2] = {
 	"stonesInBestChain",
 	"levelsInBestChain",
@@ -36,8 +38,9 @@ char *namesOfItems[numberOfItemsTypes - 2] = {
 	"bridgeAwall",
 	"bridgeB",
 	"bridgeC",
+	"disjointStep",
 };
-#define xPosition 8
-#define yPosition 9
+#define xPosition 9
+#define yPosition 10
 
 #endif
