@@ -72,7 +72,7 @@ void mutation(int *population[], int populationSize, FILE *f, FILE *f2) {
 					randomValue = rand() % maxPointValueStonesInBestChain;
 				}
 				else if (randomPoint == lossOfPointsForDepthInPercent) {
-					randomValue = rand() % maxPointValueLossOfPointsForDepthInPercent;
+					randomValue = (rand() % (maxPointValueLossOfPointsForDepthInPercent - minPointValueLossOfPointsForDepthInPercent)) - minPointValueLossOfPointsForDepthInPercent;
 				}
 				else {
 					randomValue = rand() % maxPointValue;
@@ -162,7 +162,7 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGene
 		for (int a = 1; a < numberOfPointsTypes - 1; a++) {
 			population[p][a] = rand() % maxPointValue;
 		}
-		population[p][lossOfPointsForDepthInPercent] = rand() % maxPointValueLossOfPointsForDepthInPercent;
+		population[p][lossOfPointsForDepthInPercent] = (rand() % (maxPointValueLossOfPointsForDepthInPercent - minPointValueLossOfPointsForDepthInPercent)) - minPointValueLossOfPointsForDepthInPercent;
 	}
 	// load from file if exists
 	if (populationFile != NULL) {
@@ -183,7 +183,7 @@ void geneticAlgorithm(int numberOfGenerations, int boardSize, int gamesInOneGene
 		for (int a = 1; a < numberOfPointsTypes - 1; a++) {
 			rivals[r][a] = rand() % maxPointValue;
 		}
-		rivals[r][lossOfPointsForDepthInPercent] = rand() % maxPointValueLossOfPointsForDepthInPercent;
+		rivals[r][lossOfPointsForDepthInPercent] = (rand() % (maxPointValueLossOfPointsForDepthInPercent - minPointValueLossOfPointsForDepthInPercent)) - minPointValueLossOfPointsForDepthInPercent;
 	}
 	if (rivalsFile != NULL) {
 		for (int p = 0; p < rivalsSize; p++) {
