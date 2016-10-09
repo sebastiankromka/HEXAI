@@ -55,7 +55,7 @@ void gameAIvsHuman(int AIplayer, int firstPlayer, int logLevel, int boardSize, i
 }
 
 int gameAIvsAI(int firstPlayer, int logLevel, int boardSize, int *arrayOfPaths[], int pointsAI1[], int pointsAI2[]) {
-	int state, currentPlayer = firstPlayer, step = 0;
+	int state, currentPlayer = firstPlayer, step = 0, result;
 	// create board
 	int **board = allocate2D(boardSize, boardSize);
 
@@ -81,17 +81,19 @@ int gameAIvsAI(int firstPlayer, int logLevel, int boardSize, int *arrayOfPaths[]
 		step++;
 	} while (state == noWinner);
 
-	if (logLevel > 0) {
-		printf("\nGAME WINNER = PLAYER%d\n", state);
+	if (state == player1) {
+		result = 1000 - step;
+	}
+	else {
+		result = -1000 + step;
+	}
+
+	if (logLevel > 0) {	
+		printf("\nGAME WINNER = PLAYER%d (PLAYER1 RESULT %d)\n", state, result);
 	}
 	deallocate2D(board, boardSize);
 
-	if (state == player1) {
-		return 1000 - step;
-	}
-	else {
-		return -1000 + step;
-	}
+	return result;
 }
 
 #endif

@@ -25,7 +25,7 @@ void addNewLevel(int *board[], int boardSize, int x, int depth, int items[maxDep
 void addDisjointStep(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]) {
 	int checkedID = 0;
 	int joint = 0;
-	// stones map
+	/*// stones map
 	//   1 2
 	// 6 c 3
 	// 5 4
@@ -52,7 +52,9 @@ void addDisjointStep(int *board[], int boardSize, int x, int y, int depth, int i
 	// 6
 	if (getNodeState(board, boardSize, x, y - 1) == player1) {
 		return;
-	}
+	}*/
+
+
 	// stones map
 	//      1 2 3
 	//   12 0 0 4
@@ -60,62 +62,63 @@ void addDisjointStep(int *board[], int boardSize, int x, int y, int depth, int i
 	// 10 0 0 6
 	//  9 8 7
 	// 1
-	if (getNodeState(board, boardSize, x - 2, y) == player1) {
+	if (getNodeState(board, boardSize, x - 2, y) == player1 && getNodeState(board, boardSize, x - 1, y) == freeNode) {
 		joint++;
 		checkedID = 1;
 	}
 	// 2
-	if (checkedID != 1 && getNodeState(board, boardSize, x - 2, y + 1) == player1) {
+	if (checkedID != 1 && getNodeState(board, boardSize, x - 2, y + 1) == player1 && (getNodeState(board, boardSize, x - 1, y) == freeNode || getNodeState(board, boardSize, x - 1, y + 1) == freeNode)) {
 		joint++;
 		checkedID = 2;
 	}
 	// 3
-	if (checkedID != 2 && getNodeState(board, boardSize, x - 2, y + 2) == player1) {
+	if (checkedID != 2 && getNodeState(board, boardSize, x - 2, y + 2) == player1 && getNodeState(board, boardSize, x - 1, y + 1) == freeNode) {
 		joint++;
 		checkedID = 3;
 	}
 	// 4
-	if (checkedID != 3 && getNodeState(board, boardSize, x - 1, y + 2) == player1) {
+	if (checkedID != 3 && getNodeState(board, boardSize, x - 1, y + 2) == player1 && (getNodeState(board, boardSize, x - 1, y + 1) == freeNode || getNodeState(board, boardSize, x, y + 1) == freeNode)) {
 		joint++;
 		checkedID = 4;
 	}
 	// 5
-	if (checkedID != 4 && getNodeState(board, boardSize, x, y + 2) == player1) {
+	if (checkedID != 4 && getNodeState(board, boardSize, x, y + 2) == player1 && getNodeState(board, boardSize, x, y + 1) == freeNode) {
 		joint++;
 		checkedID = 5;
 	}
 	// 6
-	if (checkedID != 5 && getNodeState(board, boardSize, x + 1, y + 1) == player1) {
+	if (checkedID != 5 && getNodeState(board, boardSize, x + 1, y + 1) == player1 && (getNodeState(board, boardSize, x, y + 1) == freeNode || getNodeState(board, boardSize, x + 1, y) == freeNode)) {
 		joint++;
 		checkedID = 6;
 	}
 	// 7
-	if (checkedID != 6 && getNodeState(board, boardSize, x + 2, y) == player1) {
+	if (checkedID != 6 && getNodeState(board, boardSize, x + 2, y) == player1 && getNodeState(board, boardSize, x + 1, y) == freeNode) {
 		joint++;
 		checkedID = 7;
 	}
 	// 8
-	if (checkedID != 7 && getNodeState(board, boardSize, x + 2, y - 1) == player1) {
+	if (checkedID != 7 && getNodeState(board, boardSize, x + 2, y - 1) == player1 && (getNodeState(board, boardSize, x + 1, y) == freeNode || getNodeState(board, boardSize, x + 1, y - 1) == freeNode)) {
 		joint++;
 		checkedID = 8;
 	}
 	// 9
-	if (checkedID != 8 && getNodeState(board, boardSize, x + 2, y - 2) == player1) {
+	if (checkedID != 8 && getNodeState(board, boardSize, x + 2, y - 2) == player1 && getNodeState(board, boardSize, x + 1, y - 1) == freeNode) {
 		joint++;
 		checkedID = 9;
 	}
 	// 10
-	if (checkedID != 9 && getNodeState(board, boardSize, x + 1, y - 2) == player1) {
+	if (checkedID != 9 && getNodeState(board, boardSize, x + 1, y - 2) == player1 && (getNodeState(board, boardSize, x + 1, y - 1) == freeNode || getNodeState(board, boardSize, x, y - 1) == freeNode)) {
 		joint++;
 		checkedID = 10;
 	}
 	// 11
-	if (checkedID != 10 && getNodeState(board, boardSize, x, y - 2) == player1) {
+	if (checkedID != 10 && getNodeState(board, boardSize, x, y - 2) == player1 && getNodeState(board, boardSize, x, y - 1) == freeNode) {
 		joint++;
+
 		checkedID = 11;
 	}
 	// 12
-	if (checkedID != 11 && checkedID != 1 && getNodeState(board, boardSize, x - 1, y - 1) == player1) {
+	if (checkedID != 11 && checkedID != 1 && getNodeState(board, boardSize, x - 1, y - 1) == player1 && (getNodeState(board, boardSize, x, y - 1) == freeNode || getNodeState(board, boardSize, x - 1, y) == freeNode)) {
 		joint++;
 	}
 	if (joint > 1) {
@@ -160,7 +163,7 @@ void addBridges(int *board[], int boardSize, int x, int y, int depth, int items[
 
 void addItems(int *board[], int boardSize, int x, int y, int depth, int items[maxDepth][numberOfItemsTypes]){
 	addBridges(board, boardSize, x, y, depth, items);
-	addDisjointStep(board, boardSize, x, y, depth, items);
+	//addDisjointStep(board, boardSize, x, y, depth, items);
 	addNewLevel(board, boardSize, x, depth, items);
 }
 

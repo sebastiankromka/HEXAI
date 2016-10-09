@@ -17,6 +17,7 @@
 #define minPointValueLossOfPointsForDepthInPercent -25
 
 #define numberOfPointsTypes 10
+#define unitResult 10
 #define stonesInBestChain 0
 #define levelsInBestChain 1
 #define win 2
